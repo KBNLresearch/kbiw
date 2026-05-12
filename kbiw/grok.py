@@ -23,6 +23,7 @@ class Grok:
         self.status = ""
         self.out = ""
         self.errors = ""
+        self.version = ""
 
 
     def configure(self):
@@ -61,7 +62,6 @@ class Grok:
         """Convert input image to JP2
         """
         # TODO include logfile option?
-        # TODO add XMP box
         self.success = True
 
         # Select compression parameters from user-specified profile
