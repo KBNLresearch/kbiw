@@ -51,8 +51,13 @@ def workflow(dirIn, dirOut, configPath, configDict):
         os.remove(checksumFile)
 
     # Write header to summary file
-    summaryHeadings = ["fileIn", "fileOut", "successGrok", "successPixelCheck",
-                       "successJpylyzerCheck", "failedJpylyzerChecks"]
+    summaryHeadings = ["fileIn",
+                       "fileOut",
+                       "successGrok",
+                       "palettedImage",
+                       "successPixelCheck",
+                       "successJpylyzerCheck",
+                       "failedJpylyzerChecks"]
 
     with open(summaryFile, 'w', newline='', encoding='utf-8') as fSum:
         writer = csv.writer(fSum, delimiter=outDelimiter)
@@ -153,5 +158,10 @@ def workflow(dirIn, dirOut, configPath, configDict):
         # Write outcomes of QA checks to summary file
         with open(summaryFile, 'a', newline='', encoding='utf-8') as fSum:
             writer = csv.writer(fSum, delimiter=outDelimiter)
-            row = [fileIn, fileOut, successGrok, successPixelCheck, successJpylyzerCheck, schTestsFailedStr]
+            row = [fileIn,
+                   fileOut,
+                   successGrok,
+                   pallettedFlag,
+                   successJpylyzerCheck,
+                   schTestsFailedStr]
             writer.writerow(row)
