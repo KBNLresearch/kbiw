@@ -18,6 +18,7 @@ import json
 import logging
 from . import shared
 from .workflows import tifftojp2generic
+from .workflows import tifftojp2mh
 
 
 __version__ = "0.1.0"
@@ -169,6 +170,8 @@ def main():
     # Run selected workflow
     if workflow == "tifftojp2-generic":
         tifftojp2generic.workflow(dirIn, dirOut, configPath, configDict)
+    elif workflow == "tifftojp2-mh":
+        tifftojp2mh.workflow(dirIn, dirOut, configPath, configDict)
 
     # Timing output
     end = time.time()
