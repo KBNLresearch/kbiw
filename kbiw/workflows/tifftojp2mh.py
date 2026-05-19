@@ -51,6 +51,85 @@ class workflow:
         self.grokInstance = None
 
 
+    def processBatch(self):
+        """Process a batch"""
+
+        # Convert list of input file extensions to upper case
+        self.extensionsIn = [extension.upper() for extension in self.extensionsIn]
+
+        # Add path to Schematron schema for properties check
+        self.schema = os.path.join(self.configPath, "schemas", self.schema)
+
+        # Start Grok class instance
+        self.grokInstance = grok.Grok()
+        self.grokInstance.configDict = self.configDict
+        self.grokInstance.configure()
+        logging.info("grk_compress version: {}".format(self.grokInstance.version))
+        self.grokInstance.compressionProfile = self.compressionProfile
+
+        # Add paths to batch manifest, checksum and summary files
+        self.batchManifest = os.path.join(self.dirOut, self.batchManifest)
+        self.checksumFile = os.path.join(self.dirOut, self.checksumFile)
+        self.summaryFile = os.path.join(self.dirOut, self.summaryFile)
+
+        # Remove any previous batch manifest / checksum / summary file instances
+        if os.path.isfile(self.batchManifest):
+            os.remove(self.batchManifest)
+        if os.path.isfile(self.checksumFile):
+            os.remove(self.checksumFile)
+        if os.path.isfile(self.summaryFile):
+            os.remove(self.summaryFile)
+
+        # Write header to batch manifest
+        manifestHeadings = ["fileIn",
+                        "fileOut",
+                        "successGrok",
+                        "palettedImage",
+                        "successPixelCheck",
+                        "successJpylyzerCheck",
+                        "failedJpylyzerChecks"]
+
+        with open(self.batchManifest, 'w', newline='', encoding='utf-8') as fManifest:
+            writer = csv.writer(fManifest, delimiter=self.delimiterOut)
+            writer.writerow(manifestHeadings)
+
+        # Iterate over directories and files in batch
+        for dirname, dirnames, filenames in os.walk(self.dirIn):
+            for subdirname in dirnames:
+                thisDirectory = os.path.join(dirname, subdirname)
+                if subdirname == "Pakbon":
+                    # Files in Pakbon directory are copied without modification
+                    self.copyDir(thisDirectory)
+                if subdirname == "Access_Renamed":
+                    # Files in Access_Renamed directory are copied without modification
+                    # TODO: check if this needs to be included at all!
+                    self.copyDir(thisDirectory)
+                if subdirname == "Concordantie":
+                    # Update concordance tables
+                    self.updateCTables(thisDirectory)
+
+            for filename in filenames:
+                if filename.startswith("._"):
+                    # Ignore AppleDouble resource fork files (identified here by name)
+                    pass
+                else:
+                    thisFile = os.path.join(dirname, filename)
+                    thisExtension = os.path.splitext(thisFile)[1]
+                    thisExtension = thisExtension.upper().strip('.')
+                    if thisExtension in self.extensionsIn:
+                        self.processImage(thisFile)
+
+        # Number of errors, warnings to log
+        logging.info("workflow completed with {} errors and {} warnings".format(self.noErrors, self.noWarnings))
+
+        # Write summary file
+        with open(self.summaryFile, 'w', newline='', encoding='utf-8') as fSum:
+            fSum.write("Grok version: {}\n".format(self.grokInstance.version))
+            fSum.write("Errors: {}\n".format(self.noErrors))
+            fSum.write("Warnings: {}\n".format(self.noWarnings))
+            fSum.write("See batch manifest and log file for details on errors and warnings\n")
+
+
     def processImage(self, fileIn):
         """Process one image"""
         successGrok = False
@@ -234,82 +313,3 @@ class workflow:
         except Exception:
             logging.error("couldn't write updated concordance table to {}".format(fileOut))
             self.noErrors += 1
-
-
-    def processBatch(self):
-        """Process a batch"""
-
-        # Convert list of input file extensions to upper case
-        self.extensionsIn = [extension.upper() for extension in self.extensionsIn]
-
-        # Add path to Schematron schema for properties check
-        self.schema = os.path.join(self.configPath, "schemas", self.schema)
-
-        # Start Grok class instance
-        self.grokInstance = grok.Grok()
-        self.grokInstance.configDict = self.configDict
-        self.grokInstance.configure()
-        logging.info("grk_compress version: {}".format(self.grokInstance.version))
-        self.grokInstance.compressionProfile = self.compressionProfile
-
-        # Add paths to batch manifest, checksum and summary files
-        self.batchManifest = os.path.join(self.dirOut, self.batchManifest)
-        self.checksumFile = os.path.join(self.dirOut, self.checksumFile)
-        self.summaryFile = os.path.join(self.dirOut, self.summaryFile)
-
-        # Remove any previous batch manifest / checksum / summary file instances
-        if os.path.isfile(self.batchManifest):
-            os.remove(self.batchManifest)
-        if os.path.isfile(self.checksumFile):
-            os.remove(self.checksumFile)
-        if os.path.isfile(self.summaryFile):
-            os.remove(self.summaryFile)
-
-        # Write header to batch manifest
-        manifestHeadings = ["fileIn",
-                        "fileOut",
-                        "successGrok",
-                        "palettedImage",
-                        "successPixelCheck",
-                        "successJpylyzerCheck",
-                        "failedJpylyzerChecks"]
-
-        with open(self.batchManifest, 'w', newline='', encoding='utf-8') as fManifest:
-            writer = csv.writer(fManifest, delimiter=self.delimiterOut)
-            writer.writerow(manifestHeadings)
-
-        # Iterate over directories and files in batch
-        for dirname, dirnames, filenames in os.walk(self.dirIn):
-            for subdirname in dirnames:
-                thisDirectory = os.path.join(dirname, subdirname)
-                if subdirname == "Pakbon":
-                    # Files in Pakbon directory are copied without modification
-                    self.copyDir(thisDirectory)
-                if subdirname == "Access_Renamed":
-                    # Files in Access_Renamed directory are copied without modification
-                    # TODO: check if this needs to be included at all!
-                    self.copyDir(thisDirectory)
-                if subdirname == "Concordantie":
-                    # Update concordance tables
-                    self.updateCTables(thisDirectory)
-
-            for filename in filenames:
-                if filename.startswith("._"):
-                    # Ignore AppleDouble resource fork files (identified here by name)
-                    pass
-                else:
-                    thisFile = os.path.join(dirname, filename)
-                    thisExtension = os.path.splitext(thisFile)[1]
-                    thisExtension = thisExtension.upper().strip('.')
-                    if thisExtension in self.extensionsIn:
-                        self.processImage(thisFile)
-
-        # Number of errors, warnings to log
-        logging.info("workflow completed with {} errors and {} warnings".format(self.noErrors, self.noWarnings))
-
-        # Write summary file
-        with open(self.summaryFile, 'w', newline='', encoding='utf-8') as fSum:
-            fSum.write("Grok version: {}\n".format(self.grokInstance.version))
-            fSum.write("Errors: {}\n".format(self.noErrors))
-            fSum.write("Warnings: {}\n".format(self.noWarnings))
-            fSum.write("See batch manifest and log file for details on errors and warnings\n")
