@@ -36,16 +36,21 @@ class workflow:
         self.summaryFile = "summary.txt"
         # Checksum file (name only, path is added later)
         self.checksumFile = "checksums.sha256"
-        # Input batch directory
+        # Number of errors encountered during workflow
+        self.noErrors = 0
+        # Number of warnings encountered during workflow
+        self.noWarnings = 0
+        # Input batch directory (set in main kbiw.py module)
         self.dirIn = None
-        # Output batch directory
+        # Output batch directory (set in main kbiw.py module)
         self.dirOut = None
-        # Configuration path
+        # Configuration path (set in main kbiw.py module)
         self.configPath = None
-        # Configuration dictionary
+        # Configuration dictionary (set in main kbiw.py module)
         self.configDict = None
-        # Grok instance
+        # Grok instance (set in processBatch function)
         self.grokInstance = None
+
 
     def processImage(self, fileIn):
         """Process one image"""
@@ -83,8 +88,10 @@ class workflow:
             logging.info("grok.compress completed successfully")
         elif self.grokInstance.status != 0:
             logging.error("abnormal grk_compress exit status")
+            self.noErrors += 1
         if not self.grokInstance.success:
             logging.error("grok.compress function resulted in an exception")
+            self.noErrors += 1
 
         logging.info("grk_compress stdout: {}".format(self.grokInstance.out))
         logging.info("grk_compress stderr: {}".format(self.grokInstance.errors))
@@ -106,6 +113,7 @@ class workflow:
 
                 schTestsFailedStr = '|'.join(schTestsFailedOut)
                 logging.warning("image does not conform to Schematron rules")
+                self.noWarnings += 1
 
             try:
                 # Check on pixel values (skip for paletted images, because LibVips can't handle paletted JP2s)
@@ -118,14 +126,17 @@ class workflow:
                         successPixelCheck = True
                     else:
                         logging.warning("pixel values of input and output images are not identical")
+                        self.noWarnings += 1
                     logging.info("Sum of squared pixel differences: {}".format(ssDiff))
                 else:
                     ssDiff = None
                     logging.warning("paletted image, skipped pixel check")
+                    self.noWarnings += 1
 
             except Exception:
                 logging.error("pixel check failed")
                 ssDiff = None
+                self.noErrors += 1
 
             # Calculate checksum (SHA-256)
             checksum = shared.generate_file_sha256(fileOut)
@@ -163,6 +174,7 @@ class workflow:
             shutil.copytree(dirPathIn, dirPathOut, dirs_exist_ok = True)
         except Exception:
             logging.error("copying data from directory {} to {} resulted in an exception".format(dirPathIn, dirPathOut))
+            self.noErrors += 1
 
 
     def updateCTables(self, dirIn):
@@ -219,6 +231,7 @@ class workflow:
                 writer.writerows(listOut)
         except Exception:
             logging.error("couldn't write updated concordance table to {}".format(fileOut))
+            self.noErrors += 1
 
 
     def processBatch(self):
@@ -237,17 +250,18 @@ class workflow:
         logging.info("grk_compress version: {}".format(self.grokInstance.version))
         self.grokInstance.compressionProfile = self.compressionProfile
 
-        # Add path to batch manifest file
+        # Add paths to batch manifest, checksum and summary files
         self.batchManifest = os.path.join(self.dirOut, self.batchManifest)
-
-        # Add path to checksum file
         self.checksumFile = os.path.join(self.dirOut, self.checksumFile)
+        self.summaryFile = os.path.join(self.dirOut, self.summaryFile)
 
-        # Remove any previous batch manifest / checksum file instances
+        # Remove any previous batch manifest / checksum / summary file instances
         if os.path.isfile(self.batchManifest):
             os.remove(self.batchManifest)
         if os.path.isfile(self.checksumFile):
             os.remove(self.checksumFile)
+        if os.path.isfile(self.summaryFile):
+            os.remove(self.summaryFile)
 
         # Write header to batch manifest
         manifestHeadings = ["fileIn",
@@ -283,3 +297,9 @@ class workflow:
                     thisExtension = thisExtension.upper().strip('.')
                     if thisExtension in self.extensionsIn:
                         self.processImage(thisFile)
+
+
+        with open(self.summaryFile, 'w', newline='', encoding='utf-8') as fSum:
+            fSum.write("Errors: {}".format(self.noErrors))
+            fSum.write("Warnings: {}".format(self.noWarnings))
+            fSum.write("See batch manifest and log file for details on errors and warnings")
