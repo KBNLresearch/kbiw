@@ -319,4 +319,14 @@ class workflow:
     def concordanceCheck(self):
         """Cross-check concordance tables against batch manifest"""
 
-        concordanceDir = os.join(self.dirOut, "Concordantie")
+        with open(self.batchManifest, 'r', newline='', encoding='utf-8') as fMan:
+            reader = csv.reader(fMan, delimiter=self.delimiterOut)
+            manifestData = list(reader)
+
+        concordanceDir = os.path.join(self.dirOut, "Concordantie")
+        cTables = os.listdir(concordanceDir)
+        for cTable in cTables:
+            with open(cTable, 'r', newline='', encoding='utf-8') as fCTab:
+                reader = csv.reader(fCTab, delimiter=self.delimiterOut)
+                cTabData = list(reader)
+
