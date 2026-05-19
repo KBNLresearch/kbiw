@@ -316,7 +316,6 @@ class workflow:
             self.noErrors += 1
 
 
-
     def concordanceCheck(self):
         """Cross-check concordance tables against batch manifest 9including reverse check)"""
         # TODO: code assumes fixed position + order of columns in concordance tables
