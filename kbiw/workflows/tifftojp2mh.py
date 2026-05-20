@@ -3,7 +3,7 @@
 """
 TIFF to JP2 workflow for Middeleeuwse Handschriften
 """
-
+import sys
 import os
 import shutil
 import csv
@@ -70,11 +70,8 @@ class workflow:
         logging.info("grk_compress version: {}".format(self.grokInstance.version))
         self.grokInstance.compressionProfile = self.compressionProfile
 
-        # Start ExifTool instance
-        # TODO: on Windows machine this probably needs some config to point to ExifTool.
-        # From docs:https://sylikc.github.io/pyexiftool/installation.html
-        # "you can specify the full pathname (...) by using `ExifTool(executable=<full path>)`
-        self.etInstance = exiftool.ExifToolHelper()
+        # Start ExifTool instance, using executables as defined in configuration file
+        self.etInstance = exiftool.ExifToolHelper(executable=self.configDict["exifToolExecutable"])
 
         # Add paths to batch manifest, checksum and summary files
         self.batchManifest = os.path.join(self.dirOut, self.batchManifest)
