@@ -144,7 +144,7 @@ def main():
         shared.errorExit(msg)
 
     # Check if workflow value is valid
-    workflowsAllowed = ["tifftojp2-generic", "tifftojp2-mh", "tifftojp2-ie"]
+    workflowsAllowed = ["tifftojp2-mh", "tifftojp2-ie", "tifftojp2-seba"]
     if workflow not in workflowsAllowed:
         msg = "workflow \"{}\" does not exist. Expected one of these values:".format(workflow)
         for wf in workflowsAllowed:
@@ -194,9 +194,12 @@ def main():
                        "Rapportages_meetresultaten",
                        "Rapportages_onregelmatigheden",
                        "rapporten HeronQAE TC 5"]
-        # Activate processing of concordance table
+        # No processing of concordance tables
         wf.processCTables = False
-
+    elif workflow == "tifftojp2-seba":
+        wf = tifftojp2.workflow()
+        # No processing of concordance tables
+        wf.processCTables = False
 
     wf.dirIn = dirIn
     wf.dirOut = dirOut
