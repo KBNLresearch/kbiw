@@ -136,11 +136,12 @@ class workflow:
                     if thisExtension in self.extensionsIn:
                         self.processImage(thisFile)
 
-        # Cross check entries in concordance tables with batch manifest
-        myCTables.verify()
+        if self.processCTables:
+            # Cross check entries in concordance tables with batch manifest
+            myCTables.verify()
 
-        # Add any errors from concordance updating / checking to general error count
-        self.noErrors += myCTables.noErrors
+            # Add any errors from concordance updating / checking to general error count
+            self.noErrors += myCTables.noErrors
 
         # Number of errors, warnings to log
         logging.info("workflow completed with {} errors and {} warnings".format(self.noErrors, self.noWarnings))

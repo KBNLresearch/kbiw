@@ -146,7 +146,7 @@ def main():
         shared.errorExit(msg)
 
     # Check if workflow value is valid
-    workflowsAllowed = ["tifftojp2-generic", "tifftojp2-mh", "tifftojp2-bs"]
+    workflowsAllowed = ["tifftojp2-generic", "tifftojp2-mh", "tifftojp2-ie"]
     if workflow not in workflowsAllowed:
         msg = "workflow \"{}\" does not exist. Expected one of these values:".format(workflow)
         for wf in workflowsAllowed:
@@ -190,6 +190,13 @@ def main():
         wf.processCTables = True
         # Name of concordance table dir
         wf.cTableDirName = "Concordantie"
+    elif workflow == "tifftojp2-ie":
+        wf = tifftojp2mh.workflow()
+        # List with names of directories that must be copied unchanged
+        wf.copyDirs = ["Rapportages_meetresultaten", "Rapportages_onregelmatigheden", "rapporten HeronQAE TC 5"]
+        # Activate processing of concordance table
+        wf.processCTables = False
+
 
     wf.dirIn = dirIn
     wf.dirOut = dirOut
