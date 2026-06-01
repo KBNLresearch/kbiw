@@ -101,19 +101,17 @@ class CTables:
                 imagesManifest.append(row[0])
             rowIndex += 1
 
-        concordanceDir = os.path.join(self.dirOut, "Concordantie")
-
         # Stop here if concordance dir doesn't exist'
-        if not os.path.isdir(concordanceDir):
-            logging.error("concordance directory {} does not exist".format(concordanceDir))
+        if not os.path.isdir(self.dirConcordance):
+            logging.error("concordance directory {} does not exist".format(self.dirConcordance))
             self.noErrors += 1
             return
-        cTables = os.listdir(concordanceDir)
+        cTables = os.listdir(self.dirConcordance)
         for cTable in cTables:
             # First part of file name refers to directory in "Signaturen"
             sigDir = cTable.split("_")[0]
             masterDirPath = os.path.join("Signaturen", sigDir, "Master")
-            cTable = os.path.join(concordanceDir, cTable)
+            cTable = os.path.join(self.dirConcordance, cTable)
             with open(cTable, 'r', newline='', encoding='utf-8') as fCTab:
                 reader = csv.reader(fCTab, delimiter=self.delimiterOut)
                 cTabData = list(reader)
