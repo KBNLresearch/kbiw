@@ -1,12 +1,12 @@
 #! /usr/bin/env python3
-"""Concordance table manipulation module"""
+"""Module for manipulating and checking of concordance tables"""
 
 import os
 import csv
 import logging
 
-class Concordance:
-    """Concordance"""
+class CTables:
+    """Concordance tables class"""
 
     def __init__(self, dirConcordance, dirIn, dirOut, delimiterIn,
                  delimiterOut, extensionsIn, batchManifest):
@@ -21,7 +21,7 @@ class Concordance:
         self.batchManifest = batchManifest
 
 
-    def updateCTables(self):
+    def update(self):
         """Update concordance tables"""
 
         dirPathInRel = os.path.relpath(self.dirConcordance, start=self.dirIn)
@@ -44,7 +44,7 @@ class Concordance:
 
 
     def updateCTable(self, fileIn, fileOut):
-        """Update concordance table"""
+        """Update one concordance table"""
 
         # TODO: might not work for file references that include paths
         listOut = []
@@ -79,12 +79,12 @@ class Concordance:
             self.noErrors += 1
 
 
-    def concordanceCheck(self):
-        """Cross-check concordance tables against batch manifest including reverse check)"""
+    def verify(self):
+        """Cross-check concordance tables against batch manifest (including reverse check)"""
         # TODO: code assumes fixed position + order of columns in concordance tables
         # verify if this is correct. If not, use column names.
 
-        logging.info("Checking concordance tables against batch manifest")
+        logging.info("Verifying concordance tables against batch manifest")
 
         with open(self.batchManifest, 'r', newline='', encoding='utf-8') as fMan:
             reader = csv.reader(fMan, delimiter=self.delimiterOut)
