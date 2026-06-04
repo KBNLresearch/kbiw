@@ -12,6 +12,7 @@ import exiftool
 from .. import shared
 from .. import grok
 from .. import pixelcheck
+from .. import convertpaletted
 from .. import propertiescheck
 from .. import ctables
 
@@ -56,6 +57,8 @@ class workflow:
         self.processCTables = False
         # Name of directory that contains concordance tables
         self.cTableDirName = None
+        # Flag that activates automatic conversion of paletted input images to a regular colorspace
+        self.convertPalettedImages = False
         # List of directory names that will copied unchanged from input to output batch
         self.copyDirs = []
 
@@ -160,6 +163,7 @@ class workflow:
 
     def processImage(self, fileIn):
         """Process one image"""
+        convertFromUnpaletted = False
         successGrok = False
         successExifTool = False
         successPixelCheck = False
@@ -184,8 +188,27 @@ class workflow:
         logging.info("Input image: {}".format(fileIn))
         logging.info("Output image: {}".format(fileOut))
 
+        if self.convertPalettedImages:
+            try:
+                exiftmp = self.etInstance.get_tags(fileIn, "IFD0:PhotometricInterpretation")
+                PhotometricInterpretation = exiftmp[0]["EXIF:PhotometricInterpretation"]
+                logging.info("PhotometricInterpretation: {}".format(PhotometricInterpretation))
+                if  PhotometricInterpretation == 3:
+                    convertFromUnpaletted = True
+                    logging.info("found paletted input image")
+                    fTmp =  os.path.abspath(os.path.join(self.dirOut, "kbiwtmp.tif"))
+                    pcSuccess = convertpaletted.convertPaletted(fileIn, fTmp)
+                    logging.info("palette conversion successful: {}".format(pSuccess))
+            except:
+                logging.warning("ExifTool couldn't extract IFD0:PhotometricInterpretation tag")
+                self.noWarnings += 1
+
         # Pass I/O to Grok instance and run the conversion
-        self.grokInstance.imageIn = fileIn
+        if convertFromUnpaletted and pcSuccess:
+            # Use unpalletted image as input
+            self.grokInstance.imageIn = fTmp
+        else:
+            self.grokInstance.imageIn = fileIn
         self.grokInstance.jp2Out = fileOut
 
         self.grokInstance.compress()
@@ -202,6 +225,14 @@ class workflow:
 
         logging.info("grk_compress stdout: {}".format(self.grokInstance.out))
         logging.info("grk_compress stderr: {}".format(self.grokInstance.errors))
+
+        if convertFromUnpaletted and pcSuccess:
+            # Remove temporary file
+            try:
+                os.remove(fTmp)
+            except Exception:
+                logging.warning("couldn't remove temporary file {}".format(fTmp))
+                self.noWarnings += 1
 
         if successGrok:
 
@@ -255,6 +286,7 @@ class workflow:
                 logging.error("pixel check failed")
                 ssDiff = None
                 self.noErrors += 1
+
 
             # Calculate checksum (SHA-512)
             checksum = shared.generate_file_sha512(fileOut)

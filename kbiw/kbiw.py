@@ -203,6 +203,8 @@ def main():
         wf = tifftojp2.workflow()
         # No processing of concordance tables
         wf.processCTables = False
+        # TEST Convert paletted images to regular colorspace
+        wf.convertPalettedImages = True
 
     wf.dirIn = dirIn
     wf.dirOut = dirOut
