@@ -5,7 +5,8 @@
 
 import pyvips
 
-def convertPaletted (imageIn, imageOut):
+
+def convertPaletted(imageIn, imageOut):
     # Re-saves input image, which results in non-paletted output image
     try:
         im1 = pyvips.Image.new_from_file(imageIn, access="sequential")
@@ -15,4 +16,3 @@ def convertPaletted (imageIn, imageOut):
         success = False
 
     return success
-

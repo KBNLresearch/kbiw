@@ -16,6 +16,7 @@ from .. import convertpaletted
 from .. import propertiescheck
 from .. import ctables
 
+
 class workflow:
     """workflow class"""
 
@@ -62,12 +63,12 @@ class workflow:
         # List of directory names that will copied unchanged from input to output batch
         self.copyDirs = []
 
-
     def processBatch(self):
         """Process a batch"""
 
         # Convert list of input file extensions to upper case
-        self.extensionsIn = [extension.upper() for extension in self.extensionsIn]
+        self.extensionsIn = [extension.upper()
+                             for extension in self.extensionsIn]
 
         # Add path to Schematron schema for properties check
         self.schema = os.path.join(self.configPath, "schemas", self.schema)
@@ -76,11 +77,13 @@ class workflow:
         self.grokInstance = grok.Grok()
         self.grokInstance.configDict = self.configDict
         self.grokInstance.configure()
-        logging.info("grk_compress version: {}".format(self.grokInstance.version))
+        logging.info("grk_compress version: {}".format(
+            self.grokInstance.version))
         self.grokInstance.compressionProfile = self.compressionProfile
 
         # Start ExifTool instance, using executables as defined in configuration file
-        self.etInstance = exiftool.ExifToolHelper(executable=self.configDict["exifToolExecutable"])
+        self.etInstance = exiftool.ExifToolHelper(
+            executable=self.configDict["exifToolExecutable"])
 
         # Add paths to batch manifest, checksum and summary files
         self.batchManifest = os.path.join(self.dirOut, self.batchManifest)
@@ -97,12 +100,12 @@ class workflow:
 
         # Write header to batch manifest
         manifestHeadings = ["image",
-                        "successGrok",
-                        "successExifTool",
-                        "palettedImage",
-                        "successPixelCheck",
-                        "successJpylyzerCheck",
-                        "failedJpylyzerChecks"]
+                            "successGrok",
+                            "successExifTool",
+                            "palettedImage",
+                            "successPixelCheck",
+                            "successJpylyzerCheck",
+                            "failedJpylyzerChecks"]
 
         with open(self.batchManifest, 'w', newline='', encoding='utf-8') as fManifest:
             writer = csv.writer(fManifest, delimiter=self.delimiterOut)
@@ -151,15 +154,16 @@ class workflow:
                 self.noErrors += 1
 
         # Number of errors, warnings to log
-        logging.info("workflow completed with {} errors and {} warnings".format(self.noErrors, self.noWarnings))
+        logging.info("workflow completed with {} errors and {} warnings".format(
+            self.noErrors, self.noWarnings))
 
         # Write summary file
         with open(self.summaryFile, 'w', newline='', encoding='utf-8') as fSum:
             fSum.write("Grok version: {}\n".format(self.grokInstance.version))
             fSum.write("Errors: {}\n".format(self.noErrors))
             fSum.write("Warnings: {}\n".format(self.noWarnings))
-            fSum.write("See batch manifest and log file for details on errors and warnings\n")
-
+            fSum.write(
+                "See batch manifest and log file for details on errors and warnings\n")
 
     def processImage(self, fileIn):
         """Process one image"""
@@ -190,17 +194,22 @@ class workflow:
 
         if self.convertPalettedImages:
             try:
-                exiftmp = self.etInstance.get_tags(fileIn, "IFD0:PhotometricInterpretation")
+                exiftmp = self.etInstance.get_tags(
+                    fileIn, "IFD0:PhotometricInterpretation")
                 PhotometricInterpretation = exiftmp[0]["EXIF:PhotometricInterpretation"]
-                logging.info("PhotometricInterpretation: {}".format(PhotometricInterpretation))
-                if  PhotometricInterpretation == 3:
+                logging.info("PhotometricInterpretation: {}".format(
+                    PhotometricInterpretation))
+                if PhotometricInterpretation == 3:
                     convertFromUnpaletted = True
                     logging.info("found paletted input image")
-                    fTmp =  os.path.abspath(os.path.join(self.dirOut, "kbiwtmp.tif"))
+                    fTmp = os.path.abspath(
+                        os.path.join(self.dirOut, "kbiwtmp.tif"))
                     pcSuccess = convertpaletted.convertPaletted(fileIn, fTmp)
-                    logging.info("palette conversion successful: {}".format(pSuccess))
+                    logging.info(
+                        "palette conversion successful: {}".format(pSuccess))
             except:
-                logging.warning("ExifTool couldn't extract IFD0:PhotometricInterpretation tag")
+                logging.warning(
+                    "ExifTool couldn't extract IFD0:PhotometricInterpretation tag")
                 self.noWarnings += 1
 
         # Pass I/O to Grok instance and run the conversion
@@ -212,7 +221,8 @@ class workflow:
         self.grokInstance.jp2Out = fileOut
 
         self.grokInstance.compress()
-        logging.info("grk_compress exit status: {}".format(self.grokInstance.status))
+        logging.info("grk_compress exit status: {}".format(
+            self.grokInstance.status))
         if self.grokInstance.status == 0:
             successGrok = True
             logging.info("grok.compress completed successfully")
@@ -224,14 +234,16 @@ class workflow:
             self.noErrors += 1
 
         logging.info("grk_compress stdout: {}".format(self.grokInstance.out))
-        logging.info("grk_compress stderr: {}".format(self.grokInstance.errors))
+        logging.info("grk_compress stderr: {}".format(
+            self.grokInstance.errors))
 
         if convertFromUnpaletted and pcSuccess:
             # Remove temporary file
             try:
                 os.remove(fTmp)
             except Exception:
-                logging.warning("couldn't remove temporary file {}".format(fTmp))
+                logging.warning(
+                    "couldn't remove temporary file {}".format(fTmp))
                 self.noWarnings += 1
 
         if successGrok:
@@ -239,16 +251,19 @@ class workflow:
             # Read metadata from input TIFF and write as XMP block to JP2
             # Adapted from: https://exiftool.org/forum/index.php?topic=2922.0
             try:
-                self.etInstance.execute("-tagsfromfile", fileIn, "-all>xmp:all", "-overwrite_original", fileOut)
+                self.etInstance.execute(
+                    "-tagsfromfile", fileIn, "-all>xmp:all", "-overwrite_original", fileOut)
                 successExifTool = True
             except Exception:
-                logging.error("ExifTool failed to copy metadata from TIFF to JP2")
+                logging.error(
+                    "ExifTool failed to copy metadata from TIFF to JP2")
                 successExifTool = False
                 self.noErrors += 1
 
             # Analyze JP2 with Jpylyzer and evaluate output against Schematron policy
             # TODO this now fails on xmlBox test because Grok doesn't support this (perhaps relax specs?)
-            status, schTestsFailed, jpTestsFailed, pallettedFlag = propertiescheck.propertiesCheck(fileOut, self.schema)
+            status, schTestsFailed, jpTestsFailed, pallettedFlag = propertiescheck.propertiesCheck(
+                fileOut, self.schema)
 
             if status == "pass":
                 successJpylyzerCheck = True
@@ -271,12 +286,15 @@ class workflow:
                         logging.error("pixel check failed with exception")
                         self.noErrors += 1
                     if ssDiff == 0:
-                        logging.info("pixel values of input and output images are identical")
+                        logging.info(
+                            "pixel values of input and output images are identical")
                         successPixelCheck = True
                     else:
-                        logging.warning("pixel values of input and output images are not identical")
+                        logging.warning(
+                            "pixel values of input and output images are not identical")
                         self.noWarnings += 1
-                    logging.info("Sum of squared pixel differences: {}".format(ssDiff))
+                    logging.info(
+                        "Sum of squared pixel differences: {}".format(ssDiff))
                 else:
                     ssDiff = None
                     logging.warning("paletted image, skipped pixel check")
@@ -286,7 +304,6 @@ class workflow:
                 logging.error("pixel check failed")
                 ssDiff = None
                 self.noErrors += 1
-
 
             # Calculate checksum (SHA-512)
             checksum = shared.generate_file_sha512(fileOut)
@@ -305,14 +322,13 @@ class workflow:
         with open(self.batchManifest, 'a', newline='', encoding='utf-8') as fManifest:
             writer = csv.writer(fManifest, delimiter=self.delimiterOut)
             row = [fileOutRel,
-                successGrok,
-                successExifTool,
-                pallettedFlag,
-                successPixelCheck,
-                successJpylyzerCheck,
-                schTestsFailedStr]
+                   successGrok,
+                   successExifTool,
+                   pallettedFlag,
+                   successPixelCheck,
+                   successJpylyzerCheck,
+                   schTestsFailedStr]
             writer.writerow(row)
-
 
     def copyDir(self, dirIn):
         """Copy input dir to same relative location in output batch"""
@@ -320,9 +336,11 @@ class workflow:
         dirPathInRel = os.path.relpath(dirIn, start=self.dirIn)
         dirPathIn = os.path.abspath(os.path.join(self.dirIn, dirPathInRel))
         dirPathOut = os.path.abspath(os.path.join(self.dirOut, dirPathInRel))
-        logging.info("copying directory {} to {}".format(dirPathIn, dirPathOut))
+        logging.info("copying directory {} to {}".format(
+            dirPathIn, dirPathOut))
         try:
-            shutil.copytree(dirPathIn, dirPathOut, dirs_exist_ok = True)
+            shutil.copytree(dirPathIn, dirPathOut, dirs_exist_ok=True)
         except Exception:
-            logging.error("copying data from directory {} to {} resulted in an exception".format(dirPathIn, dirPathOut))
+            logging.error("copying data from directory {} to {} resulted in an exception".format(
+                dirPathIn, dirPathOut))
             self.noErrors += 1

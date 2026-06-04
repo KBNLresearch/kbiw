@@ -5,6 +5,7 @@ import os
 import csv
 import logging
 
+
 class CTables:
     """Concordance tables class"""
 
@@ -21,13 +22,13 @@ class CTables:
         self.batchManifest = batchManifest
         self.dirConcordanceOut = None
 
-
     def update(self):
         """Update concordance tables"""
 
         dirPathInRel = os.path.relpath(self.dirConcordanceIn, start=self.dirIn)
         dirPathIn = os.path.abspath(os.path.join(self.dirIn, dirPathInRel))
-        self.dirConcordanceOut = os.path.abspath(os.path.join(self.dirOut, dirPathInRel))
+        self.dirConcordanceOut = os.path.abspath(
+            os.path.join(self.dirOut, dirPathInRel))
 
         # Create output directory
         if not os.path.isdir(self.dirConcordanceOut):
@@ -43,14 +44,14 @@ class CTables:
             if os.path.isfile(fileIn) and fileExtension == "CSV":
                 self.updateCTable(fileIn, fileOut)
 
-
     def updateCTable(self, fileIn, fileOut):
         """Update one concordance table"""
 
         # TODO: might not work for file references that include paths
         listOut = []
         rowIndex = 0
-        logging.info("updating concordance table {} to {}".format(fileIn, fileOut))
+        logging.info(
+            "updating concordance table {} to {}".format(fileIn, fileOut))
         with open(fileIn, 'r', newline='', encoding='utf-8') as fIn:
             reader = csv.reader(fIn, delimiter=self.delimiterIn)
             for row in reader:
@@ -76,9 +77,9 @@ class CTables:
                 writer = csv.writer(fOut, delimiter=self.delimiterOut)
                 writer.writerows(listOut)
         except Exception:
-            logging.error("couldn't write updated concordance table to {}".format(fileOut))
+            logging.error(
+                "couldn't write updated concordance table to {}".format(fileOut))
             self.noErrors += 1
-
 
     def verify(self):
         """Cross-check concordance tables against batch manifest (including reverse check)"""
@@ -104,7 +105,8 @@ class CTables:
 
         # Stop here if concordance dir doesn't exist'
         if not os.path.isdir(self.dirConcordanceOut):
-            logging.error("concordance directory {} does not exist".format(self.dirConcordanceOut))
+            logging.error("concordance directory {} does not exist".format(
+                self.dirConcordanceOut))
             self.noErrors += 1
             return
         cTables = os.listdir(self.dirConcordanceOut)
@@ -126,7 +128,8 @@ class CTables:
                     # First column: master image
                     imageMaster = row[0]
                     # Add masterDirPath to get corresponding batch manifest value
-                    imageMasterFullPath = os.path.join(masterDirPath, imageMaster)
+                    imageMasterFullPath = os.path.join(
+                        masterDirPath, imageMaster)
                     imagesCTable.append(imageMasterFullPath)
 
                     # Columns 3 - 6 refer to target images (column 2 refers to access images, which are not in manifest)
@@ -135,13 +138,16 @@ class CTables:
                         imageTarget = row[i]
                         # Directory of this image follows from file name
                         try:
-                            nameComponents = imageTarget.split(".")[0].split("_")
+                            nameComponents = imageTarget.split(".")[
+                                0].split("_")
                         except IndexError:
                             nameComponents = []
                         try:
-                            targetDir = "{}_{}_{}".format(nameComponents[0], nameComponents[2], nameComponents[3])
+                            targetDir = "{}_{}_{}".format(
+                                nameComponents[0], nameComponents[2], nameComponents[3])
                             # Construct full path in corresponding batch manifest value
-                            imageTargetFullPath = os.path.join("Targets", targetDir, imageTarget)
+                            imageTargetFullPath = os.path.join(
+                                "Targets", targetDir, imageTarget)
                             imagesCTable.append(imageTargetFullPath)
                         except IndexError:
                             pass
@@ -151,7 +157,8 @@ class CTables:
             for image in imagesCTable:
                 # Check against batch manifest
                 if not image in imagesManifest:
-                    logging.error("image {} not found in batch manifest".format(image))
+                    logging.error(
+                        "image {} not found in batch manifest".format(image))
                     self.noErrors += 1
                 # Add image to combined list of image references from all concordance tables
                 imagesAllCTables.append(image)
@@ -159,5 +166,6 @@ class CTables:
         # Reverse check
         for image in imagesManifest:
             if not image in imagesAllCTables:
-                logging.error("image {} from batch manifest not referenced in any concordance table".format(image))
+                logging.error(
+                    "image {} from batch manifest not referenced in any concordance table".format(image))
                 self.noErrors += 1

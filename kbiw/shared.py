@@ -8,6 +8,7 @@ import sys
 import os
 import hashlib
 
+
 def errorExit(msg):
     """Write error to stderr and exit"""
     msgString = "ERROR: {}\n".format(msg)

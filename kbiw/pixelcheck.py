@@ -5,6 +5,7 @@
 
 import pyvips
 
+
 def sumSqDiff(image1, image2):
     """ Returns sum of squared difference between two images"""
 

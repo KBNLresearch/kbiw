@@ -6,6 +6,7 @@ import sys
 import subprocess as sub
 from . import shared
 
+
 class Grok:
     """Grok class"""
 
@@ -25,29 +26,35 @@ class Grok:
         self.errors = ""
         self.version = ""
 
-
     def configure(self):
         """Configure this Grok instance"""
         self.grok_dir = os.path.expanduser(self.configDict["grokDir"])
-        self.grok_bin_dir = os.path.join(os.path.normpath(self.grok_dir), "bin")
-        self.grok_lib_dir = os.path.join(os.path.normpath(self.grok_dir), "lib")
+        self.grok_bin_dir = os.path.join(
+            os.path.normpath(self.grok_dir), "bin")
+        self.grok_lib_dir = os.path.join(
+            os.path.normpath(self.grok_dir), "lib")
         if sys.platform == 'win32':
             # Windows
-            self.grk_compress = os.path.join(os.path.normpath(self.grok_bin_dir), "grk_compress.exe")
+            self.grk_compress = os.path.join(
+                os.path.normpath(self.grok_bin_dir), "grk_compress.exe")
         else:
             # Linux, MacOS
-            self.grk_compress = os.path.join(os.path.normpath(self.grok_bin_dir), "grk_compress")
+            self.grk_compress = os.path.join(
+                os.path.normpath(self.grok_bin_dir), "grk_compress")
         # Test if grk_compress exists
         if not os.path.isfile(self.grk_compress):
-            msg = "grk_compress binary ({}) is missing".format(self.grk_compress)
+            msg = "grk_compress binary ({}) is missing".format(
+                self.grk_compress)
             shared.errorExit(msg)
         # Test if it is executable
         if not os.access(self.grk_compress, os.X_OK):
-            msg = "grk_compress binary ({}) is not executable".format(self.grk_compress)
+            msg = "grk_compress binary ({}) is not executable".format(
+                self.grk_compress)
             shared.errorExit(msg)
         # Test if lib directory exists
         if not os.path.isdir(self.grok_lib_dir):
-            msg = "grok lib directory ({}) is missing".format(self.grok_lib_dir)
+            msg = "grok lib directory ({}) is missing".format(
+                self.grok_lib_dir)
             shared.errorExit(msg)
         # Set LD_LIBRARY_PATH for this class instance
         if sys.platform == 'linux':
@@ -58,7 +65,6 @@ class Grok:
             os.environ['DYLD_LIBRARY_PATH'] = self.grok_lib_dir
         # Get version
         self.getVersion()
-
 
     def getVersion(self):
         """Get version number
@@ -83,7 +89,6 @@ class Grok:
 
         self.status = status
         self.version = out.strip()
-
 
     def compress(self):
         """Convert input image to JP2
@@ -119,6 +124,3 @@ class Grok:
         self.status = status
         self.out = out
         self.errors = err
-
-
-
