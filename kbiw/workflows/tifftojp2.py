@@ -7,7 +7,6 @@ TIFF to JP2 workflow
 import os
 import shutil
 import csv
-import hashlib
 import logging
 import exiftool
 from .. import shared
@@ -36,7 +35,7 @@ class workflow:
         # Summary file (name only, path is added later)
         self.summaryFile = "summary.txt"
         # Checksum file (name only, path is added later)
-        self.checksumFile = "checksums.sha256"
+        self.checksumFile = "checksums.sha512"
         # Number of errors encountered during workflow
         self.noErrors = 0
         # Number of warnings encountered during workflow
@@ -257,8 +256,8 @@ class workflow:
                 ssDiff = None
                 self.noErrors += 1
 
-            # Calculate checksum (SHA-256)
-            checksum = shared.generate_file_sha256(fileOut)
+            # Calculate checksum (SHA-512)
+            checksum = shared.generate_file_sha512(fileOut)
 
             # File reference, relative to output directory
             fileOutRel = os.path.relpath(fileOut, start=self.dirOut)

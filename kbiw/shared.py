@@ -29,14 +29,14 @@ def checkDirExists(pathIn):
         errorExit(msg)
 
 
-def generate_file_sha256(fileIn):
-    """Generate sha256 hash of file"""
+def generate_file_sha512(fileIn):
+    """Generate sha512 hash of file"""
 
     # fileIn is read in chunks to ensure it will work with (very) large files as well
     # Adapted from: http://stackoverflow.com/a/1131255/1209004
 
     blocksize = 2**20
-    m = hashlib.sha256()
+    m = hashlib.sha512()
     with open(fileIn, "rb") as f:
         while True:
             buf = f.read(blocksize)
