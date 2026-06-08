@@ -122,7 +122,7 @@ def main():
         os.environ.get('LOCALAPPDATA') or
         os.environ.get('XDG_CONFIG_HOME') or
         os.path.join(os.environ['HOME'], '.config'),
-        "kb-iw")
+        "kbiw")
 
     # Get configuration, and set up local configuration if it doesn't exist
     configDict = configure(configPath)
@@ -171,7 +171,7 @@ def main():
             shared.errorExit(msg)
 
     # Log file
-    logFile = os.path.join(dirOut, 'kb-iw.log')
+    logFile = os.path.join(dirOut, 'kbiw.log')
 
     # Remove any previous log file instances
     if os.path.isfile(logFile):
@@ -185,7 +185,7 @@ def main():
 
     # Start clock for statistics
     start = time.time()
-    logging.info("kb-iw started: {}".format(time.asctime()))
+    logging.info("kbiw started: {}".format(time.asctime()))
     logging.info("starting workflow \"{}\"".format(workflow))
 
     # Run selected workflow
@@ -225,7 +225,7 @@ def main():
 
     # Timing output
     end = time.time()
-    logging.info("kb-iw ended: {}".format(time.asctime()))
+    logging.info("kbiw ended: {}".format(time.asctime()))
     # Elapsed time (seconds)
     timeElapsed = end - start
     timeInMinutes = round((timeElapsed / 60), 2)

@@ -3,7 +3,7 @@ requires = ["setuptools >= 77.0.3"]
 build-backend = "setuptools.build_meta"
 
 [project]
-name = "kb-iw"
+name = "kbiw"
 dynamic = ["version"]
 authors = [
   { name="Johan van der Knijff", email="johan.vanderknijff@kb.nl" },
@@ -25,7 +25,7 @@ license = "Apache-2.0"
 license-files = ["LICENSE"]
 
 [project.scripts]
-kb-iw = "kbiw.kbiw:main"
+kbiw = "kbiw.kbiw:main"
 
 [tool.setuptools]
 include-package-data = true
@@ -34,5 +34,5 @@ include-package-data = true
 version = {attr = "kbiw.kbiw.__version__"}
 
 [project.urls]
-Homepage = "https://github.com/KBNLresearch/kb-iw/"
-Issues = "https://github.com/KBNLresearch/kb-iw/issues"
+Homepage = "https://github.com/KBNLresearch/kbiw/"
+Issues = "https://github.com/KBNLresearch/kbiw/issues"

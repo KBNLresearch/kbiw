@@ -23,7 +23,7 @@ The software also generates checksums of all converted images.
 
   <https://github.com/GrokImageCompression/grok/releases>
 
-2. Extract the ZIP file to your local file system, and make a note of the installation location. You'll need to enter this later in the kb-iw configuration file.
+2. Extract the ZIP file to your local file system, and make a note of the installation location. You'll need to enter this later in the kbiw configuration file.
 
 ### Libvips
 
@@ -43,7 +43,7 @@ TODO
 
 1. Download the latest release from the [build-win64-mxe repository](https://github.com/libvips/build-win64-mxe/releases). For a 64 bit Windows system you need the ZIP file that follows the "vips-dev-x64-all-x.y.z.zip" naming pattern (e.g. vips-dev-x64-all-8.18.2.zip).
 
-2. Extract the ZIP file to your hard disk, and make a note of the installation location (e.g. "C:\vips-dev"). You'll need to enter this later in the kb-iw configuration file.
+2. Extract the ZIP file to your hard disk, and make a note of the installation location (e.g. "C:\vips-dev"). You'll need to enter this later in the kbiw configuration file.
 
 ### ExifTool
 
@@ -67,9 +67,9 @@ TODO
 
 3. In the extracted folder, rename the file "exiftool(-k).exe" to "exiftool.exe
 
-4. Make a note of the installation location (e.g. "C:\exiftool"). You'll need to enter this later in the kb-iw configuration file.
+4. Make a note of the installation location (e.g. "C:\exiftool"). You'll need to enter this later in the kbiw configuration file.
 
-## Installation of kb-iw
+## Installation of kbiw
 
 As of 2026, [uv](https://docs.astral.sh/uv/) appears to be the most straightforward tool for installing Python applications on a variety of platforms (Linux, MacOS, Windows).
 
@@ -103,28 +103,28 @@ powershell -ExecutionPolicy ByPass -c "irm https://astral.sh/uv/install.ps1 | ie
 
 Regardless of the operating system, in some cases the installation script will update your system's configuration to make the location of the uv executable globally accessible. If this happens, just close your current terminal, and open a new one for these changes to take effect. Pay attention to the screen output of the installation script for any details on this.
 
-### kb-iw installation
+### kbiw installation
 
-Use the following command to install kb-iw (all platforms):
-
-```
-uv tool install kb-iw
-```
-
-Then run kb-iw once:
+Use the following command to install kbiw (all platforms):
 
 ```
-kb-iw
+uv tool install kbiw
 ```
 
-Depending on your system, kb-iw will now create a configuration folder (see next section).
+Then run kbiw once:
+
+```
+kbiw
+```
+
+Depending on your system, kbiw will now create a configuration folder (see next section).
 
 ## Configuration
 
-Before you can use kb-iw, you need to edit the configuration file, which is located in the configuration folder. The configuration folder has the name "kb-iw", and its location depends on your operating system:
+Before you can use kbiw, you need to edit the configuration file, which is located in the configuration folder. The configuration folder has the name "kbiw", and its location depends on your operating system:
 
-- For Linux and MacOS, the configuration folder is a subdirectory of the location defined by the environment variable *$XDG_CONFIG_HOME*. If this variable is not set, it will be a subdirectory of the *.config* directory in the user's home folder (e.g. `/home/johan/.config/kb-iw`). Note that the *.config* directory is hidden by default.
-- For Windows, the configuration folder is a subdirectory of of the *AppData\Local* folder (e.g. `C:\Users\johan\AppData\Local\kb-iw`).
+- For Linux and MacOS, the configuration folder is a subdirectory of the location defined by the environment variable *$XDG_CONFIG_HOME*. If this variable is not set, it will be a subdirectory of the *.config* directory in the user's home folder (e.g. `/home/johan/.config/kbiw`). Note that the *.config* directory is hidden by default.
+- For Windows, the configuration folder is a subdirectory of of the *AppData\Local* folder (e.g. `C:\Users\johan\AppData\Local\kbiw`).
 
 Open the configuration file ("config.json") in a text editor, and edit the following values:
 
@@ -146,12 +146,12 @@ Here's an example for a Windows system:
 }
 ```
 
-## upgrade kb-iw
+## upgrade kbiw
 
-Use the following command to upgrade an existing kb-iw installation to the latest version:
+Use the following command to upgrade an existing kbiw installation to the latest version:
 
 ```
-uv tool upgrade kb-iw
+uv tool upgrade kbiw
 ```
 
 <!---
