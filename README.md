@@ -129,7 +129,7 @@ Before you can use kbiw, you need to edit the configuration file, which is locat
 Open the configuration file ("config.json") in a text editor, and edit the following values:
 
 |Variable|Meaning|Examples|
-|:--|:--||
+|:--|:--|:--|
 |grokDir|Grok installation directory|`C:/Grok` (Windows); `~/grok` (Linux)|
 |exifToolExecutable|ExifTool executable|`C:/exiftool/exiftool.exe` (Windows); `/bin/exiftool` (Linux)|
 |vipsBinDir|Libvips binary dir (only needed on Windows, ignored on Linux/macOS)|`C:/vips-dev/bin` (windows)|
