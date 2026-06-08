@@ -21,7 +21,7 @@ The software also generates checksums of all converted images.
 
 1. Download the latest binaries of the Grok image compression software for your platform from:
 
-  <https://github.com/GrokImageCompression/grok/releases>
+   <https://github.com/GrokImageCompression/grok/releases>
 
 2. Extract the ZIP file to your local file system, and make a note of the installation location. You'll need to enter this later in the kbiw configuration file.
 
