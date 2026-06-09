@@ -202,60 +202,32 @@ The command-line arguments are:
 |dirOut|output batch directory|
 |workflow|workflow (tifftojp2-generic, tifftojp2-mh, tifftojp2-ie)|
 
-
-
-### process command
-
-Run imgquad with the *process* command to process a batch. The syntax is:
+As an example, the following command converts input batch "batch-tiff" to "output batch "batch-jp2", using the "tifftojp2-generic" workflow:
 
 ```
-usage: imgquad process [-h] [--prefixout PREFIXOUT] [--outdir OUTDIR]
-                       [--delimiter DELIMITER] [--verbose]
-                       profile batchDir
+kbiw ./batch-tiff ./batch-jp2 tifftojp2-generic
 ```
 
-The *process* command expects the following positional arguments: 
+## Currently implemented workflows
 
-|Argument|Description|
-|:-----|:--|
-|profile|This defines the validation profile. Note that any file paths entered here will be ignored, as Imgquad only accepts  profiles from the profiles directory. You can just enter the file name without the path. Use the *list* command to list all available profiles.|
-|batchDir|This defines the batch directory that will be analyzed.|
+### tifftojp2-generic
 
-In addition, the following optional arguments are available:
+TODO add short decription.
 
-|Argument|Description|
-|:-----|:--|
-|--prefixout, -p|This defines a text prefix on which the names of the output files are based (default: "pq").|
-|--outdir, -o|This defines the directory where output is written (default: current working directory from which imgquad is launched).|
-|--delimiter, -d|This defines the delimiter that is used in the output summary file (default: ';')|
-|--verbose, -b|This tells imgquad to report Schematron output in verbose format.|
+### tifftojp2-mh
 
-In the simplest case, we can call imgquad with the profile and the batch directory as the only arguments:
+TODO add short decription.
 
-```
-imgquad process beeldstudio-retro.xml ./mybatch
-```
+### tifftojp2-ie
 
-Imgquad will now recursively traverse all directories and files inside the "mybatch" directory, and analyse all image files (based on a file extension match).
-
-### list command
-
-Run imgquad with the *list* command to get a list of the available profiles and schemas, as well as their locations. For example:
-
-```
-imgquad list
-```
-
-Results in:
-
-```
-Available profiles (directory /home/johan/.config/imgquad/profiles):
-  - mh-2025-tiff.xml
-Available schemas (directory /home/johan/.config/imgquad/schemas):
-  - mh-2025-tiff-600.sch
-```
+TODO add short decription.
 
 
+## Output files
+
+TODO.
+
+<!--
 
 ## Schemas
 
