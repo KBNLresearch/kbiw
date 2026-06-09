@@ -71,7 +71,7 @@ TODO
 
 ## Installation of kbiw
 
-As of 2026, [uv](https://docs.astral.sh/uv/) appears to be the most straightforward tool for installing Python applications on a variety of platforms (Linux, MacOS, Windows).
+As of 2026, [uv](https://docs.astral.sh/uv/) appears to be the most straightforward tool for installing Python applications on a variety of platforms (Linux, MacOS, Windows). However, the default KB Windows security policy blocks any applications that are installed in this way. For these machines, we have to install kbiw in a virtual environment, after which kbiw can be run as a Python module.
 
 ### uv installation
 
@@ -111,15 +111,47 @@ Use the following command to install kbiw (all platforms):
 uv tool install kbiw
 ```
 
-Then run kbiw once:
+## Virtual environment installation
+
+As an alternative to the uv installation, you can also install kbiw in a virtual environment. This is especially useful in case of Windows policies that block running installed Python applications.
+
+### Create a virtual environment
+
+First create a virtual environment. To keep things organised, it's a good idea to create it in a dedicated "virtual environments" folder (e.g. "C:\venvs"). Then we can create a virtual environment "kbiw" using the command:
+
+```
+python -m venv C:\venvs\kbiw
+```
+
+Next activate the virtual environment using:
+
+```
+C:\venvs\kbiw\Scripts\activate
+```
+
+Now install kbiw in this virtual environment with:
+
+```
+python -m pip install kbiw
+```
+
+## Initialize configuration
+
+After the installation, run kbiw once:
 
 ```
 kbiw
 ```
 
+For a virtual environment installation (KB Windows only), use this command instead: 
+
+```
+python -m kbiw
+```
+
 Depending on your system, kbiw will now create a configuration folder (see next section).
 
-## Configuration
+## Edit configuration
 
 Before you can use kbiw, you need to edit the configuration file, which is located in the configuration folder. The configuration folder has the name "kbiw", and its location depends on your operating system:
 
