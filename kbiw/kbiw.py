@@ -31,11 +31,11 @@ def parseCommandLine():
     parser.add_argument("dirIn",
                         action="store",
                         type=str,
-                        help="input directory")
+                        help="input batch directory")
     parser.add_argument("dirOut",
                         action="store",
                         type=str,
-                        help="output directory")
+                        help="output batch directory")
     parser.add_argument("workflow",
                         action="store",
                         type=str,

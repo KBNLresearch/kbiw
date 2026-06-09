@@ -186,23 +186,21 @@ Use the following command to upgrade an existing kbiw installation to the latest
 uv tool upgrade kbiw
 ```
 
-<!---
+## Using kbiw
 
-## Command-line syntax
-
-The general syntax of imgquad is:
+The general syntax of kbiw is:
 
 ```
-usage: imgquad [-h] [--version] {process,list,copyps} ...
+kbiw [-h] [--version] dirIn dirOut workflow
 ```
 
-Imgquad has three sub-commands:
+The command-line arguments are:
 
-|Command|Description|
+|Argument|Description|
 |:-----|:--|
-|process|Process a batch.|
-|list|List available profiles and schemas.|
-|copyps|Copy default profiles and schemas to user directory.|
+|dirIn|input batch directory|
+|dirOut|output batch directory|
+|workflow|workflow (tifftojp2-generic, tifftojp2-mh, tifftojp2-ie)|
 
 
 
