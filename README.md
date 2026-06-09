@@ -212,20 +212,37 @@ kbiw ./batch-tiff ./batch-jp2 tifftojp2-generic
 
 ### tifftojp2-generic
 
-TODO add short decription.
+TODO add short description.
 
 ### tifftojp2-mh
 
-TODO add short decription.
+TODO add short description.
 
 ### tifftojp2-ie
 
-TODO add short decription.
+TODO add short description.
 
+## Configuration file
+
+TODO
+
+## Schemas
+
+TODO
 
 ## Output files
 
-TODO.
+### Manifest file
+
+manifest.csv
+
+### Checksum file
+
+checksums.sha512
+
+### Log file
+
+kbiw.log
 
 <!--
 
