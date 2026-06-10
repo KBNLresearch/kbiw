@@ -239,7 +239,7 @@ This is a semicolon-delimited file with information about each converted image. 
 |palettedImage|True/False flag that is True if the output JP2 has a color palette, and False otherwise (some JP2 decoders cannot decode paletted images, so in general you may want to avoid them)|
 |successPixelCheck|True/False flag that indicates if the check on the pixel values was successful|
 |successJpylyzerCheck|True/False flag that indicates if the check on the image properties (Jpylyzer + Schematron) was successful|
-|failedJpylyzerChecks|List of failed Jpylyzer + Schematron checks (separated by "|" characters)|
+|failedJpylyzerChecks|List of failed Jpylyzer + Schematron checks (separated by "\|" characters)|
 
 #### kbiw.log
 
