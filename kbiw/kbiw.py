@@ -39,7 +39,7 @@ def parseCommandLine():
     parser.add_argument("workflow",
                         action="store",
                         type=str,
-                        help="workflow (tifftojp2-generic, tifftojp2-mh, tifftojp2-ie)")
+                        help="workflow (tifftojp2-generic, tifftojp2-generic-convertpaletted, tifftojp2-mh, tifftojp2-ie)")
     parser.add_argument("--version", "-v",
                         action="version",
                         version=__version__)
@@ -226,10 +226,21 @@ def main():
         wf.schema = "kbMaster_2026.sch"
         # No processing of concordance tables
         wf.processCTables = False
-        # TEST Convert paletted images to regular colorspace
+    elif workflow == "tifftojp2-generic-convertpaletted":
+        # Generic workflow - input batch only contains TIFF images
+        # Convert any paletted TIFFs to (temporary) "normal" TIFF
+        # before converting to JP2, to prevent paletted JP2s
+        wf = tifftojp2.workflow()
+        # Compression profile
+        wf.compressionProfile = "KB_MASTER_LOSSLESS_10/06/2026"
+        # Schematron schema used for properties check
+        wf.schema = "kbMaster_2026.sch"
+        # No processing of concordance tables
+        wf.processCTables = False
+        # Convert paletted images to regular colorspace
         wf.convertPalettedImages = True
 
-    # Check if comprssion profile exists
+    # Check if compression profile exists
     profileExists = False
     for profile in configDict["compressionProfiles"]:
         if profile["name"] == wf.compressionProfile:
