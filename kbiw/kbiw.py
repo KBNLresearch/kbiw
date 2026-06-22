@@ -73,8 +73,14 @@ def configure(configPath):
         msg = "configuration file ({}) is missing".format(configFile)
         shared.errorExit(msg)
 
-    # Read config file to dictionary
+    cprofilesFile = os.path.join(configPath, "cprofiles.json")
+    if not os.path.isfile(cprofilesFile):
+        msg = "compression profiles file ({}) is missing".format(cprofilesFile)
+        shared.errorExit(msg)
+
+    # Read config and compression profiles to dictionaries
     configDict = {}
+    cprofilesDict = {}
 
     try:
         with open(configFile, 'r', encoding='utf-8') as f:
@@ -92,25 +98,32 @@ def configure(configPath):
     if not "vipsBinDir" in configDict:
         msg = "\"vipsBinDir\" entry missing configuration file"
         shared.errorExit(msg)
-    if not "compressionProfiles" in configDict:
-        msg = "\"compressionProfiles\" entry missing in configuration file"
+
+    try:
+        with open(cprofilesFile, 'r', encoding='utf-8') as f:
+            cprofilesDict = json.load(f)
+    except:
+        raise
+
+    if not "compressionProfiles" in cprofilesDict:
+        msg = "\"compressionProfiles\" entry missing in compression profiles file"
         shared.errorExit(msg)
 
-    for compressionProfile in configDict["compressionProfiles"]:
+    for compressionProfile in cprofilesDict["compressionProfiles"]:
         if not "name" in compressionProfile:
-            msg = "\"name\" entry missing in configuration file"
+            msg = "\"name\" entry missing in compression profiles file"
             shared.errorExit(msg)
         if type(compressionProfile["name"]) != str:
             msg = "\"name\" value is not a string"
             shared.errorExit(msg)
         if not "params" in compressionProfile:
-            msg = "\"params\" entry missing in configuration file"
+            msg = "\"params\" entry missing in compression profiles file"
             shared.errorExit(msg)
         if type(compressionProfile["params"]) != list:
             msg = "\"params\" value is not a list"
             shared.errorExit(msg)
 
-    return configDict
+    return configDict, cprofilesDict
 
 
 def main():
@@ -125,7 +138,7 @@ def main():
         "kbiw")
 
     # Get configuration, and set up local configuration if it doesn't exist
-    configDict = configure(configPath)
+    configDict, cprofilesDict = configure(configPath)
 
     # Get input from command line
     args = parseCommandLine()
@@ -242,7 +255,7 @@ def main():
 
     # Check if compression profile exists
     profileExists = False
-    for profile in configDict["compressionProfiles"]:
+    for profile in cprofilesDict["compressionProfiles"]:
         if profile["name"] == wf.compressionProfile:
             profileExists = True
     if not profileExists:
@@ -257,6 +270,7 @@ def main():
     wf.dirOut = dirOut
     wf.configPath = configPath
     wf.configDict = configDict
+    wf.cprofilesDict = cprofilesDict
     wf.processBatch()
 
     # Timing output

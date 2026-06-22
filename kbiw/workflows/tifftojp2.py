@@ -49,6 +49,8 @@ class workflow:
         self.configPath = None
         # Configuration dictionary (set in main kbiw.py module)
         self.configDict = None
+        # Compression profiles dictionary (set in main kbiw.py module)
+        self.cprofilesDict = None
         # Grok instance (set in processBatch function)
         self.grokInstance = None
         # ExifTool instance (set in processBatch function)
@@ -77,6 +79,7 @@ class workflow:
         # Start Grok class instance
         self.grokInstance = grok.Grok()
         self.grokInstance.configDict = self.configDict
+        self.grokInstance.cprofilesDict = self.cprofilesDict
         self.grokInstance.configure()
         logging.info("grk_compress version: {}".format(
             self.grokInstance.version))

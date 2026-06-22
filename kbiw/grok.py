@@ -17,6 +17,7 @@ class Grok:
         self.grok_lib_dir = ""
         self.grk_compress = ""
         self.configDict = {}
+        self.cprofilesDict = {}
         self.compressionProfile = ""
         self.imageIn = ""
         self.jp2Out = ""
@@ -97,7 +98,7 @@ class Grok:
         self.success = True
 
         # Select compression parameters from user-specified profile
-        for profile in self.configDict["compressionProfiles"]:
+        for profile in self.cprofilesDict["compressionProfiles"]:
             if profile["name"] == self.compressionProfile:
                 compressionArgs = profile["params"]
 
