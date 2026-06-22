@@ -173,7 +173,6 @@ Here's an example for a Windows system:
 }
 ```
 
-The remaining part of configuration file contains a set of compression profiles, which define the JPEG 20000 compression options used by Grok. Make sure to *not* change these (unless you know what you're doing), as it may result in unexpected behaviour.
 
 ## Using kbiw
 
@@ -266,6 +265,9 @@ Workflow for batches from the "Indisch Erfgoed" program. This workflow is largel
 
 - Create verbatim copies of the directories "Afgeleiden", "Rapportages_meetresultaten", "Rapportages_onregelmatigheden" and "rapporten HeronQAE TC 5".
 
+## Compression profiles
+
+The file "cprofiles.json" in the configuration defines a set of compression profiles, which define the JPEG 20000 compression options used by Grok. Make sure to *not* change these (unless you know what you're doing), as it may result in unexpected behaviour.
 
 ## Schemas
 
