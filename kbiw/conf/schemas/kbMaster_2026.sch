@@ -37,6 +37,14 @@ on "Metamorfoze"
 
     </s:rule>
 
+    <!-- Image header box checks -->
+    <s:rule context="/file/properties/jp2HeaderBox/imageHeaderBox">
+        <!-- Check that number of colour components equals 3 -->
+        <s:assert test="nC = '3'">wrong number of colour components</s:assert>
+        <!-- Check that number of bits per component equals 8 -->
+        <s:assert test="bPCDepth = '8'">wrong number of bits per component</s:assert>
+    </s:rule>
+
     <!-- check that resolution box exists -->
     <s:rule context="/file/properties/jp2HeaderBox">
         <s:assert test="resolutionBox">no resolution box</s:assert>
@@ -50,6 +58,11 @@ on "Metamorfoze"
     <!-- check that METH equals 'Restricted ICC' -->
     <s:rule context="/file/properties/jp2HeaderBox/colourSpecificationBox">
         <s:assert test="meth = 'Restricted ICC'">METH not 'Restricted ICC'</s:assert>
+    </s:rule>
+
+    <!-- check that ICC profile description equals 'Adobe RGB (1998)' or 'eciRGB v2' -->
+    <s:rule context="file/properties/jp2HeaderBox/colourSpecificationBox/icc">
+        <s:assert test="description = 'Adobe RGB (1998)' or description = 'eciRGB v2'">wrong ICC profile</s:assert>
     </s:rule>
 
     <!-- check X- and Y- tile sizes -->
@@ -109,7 +122,7 @@ on "Metamorfoze"
     <!-- Check specs reference as codestream comment -->
     <!-- Rule looks for one exact match, additional codestream comments are permitted -->
     <s:rule context="/file/properties/contiguousCodestreamBox">
-        <s:assert test="count(com/comment[text()='KB_MASTER_LOSSLESS_10/06/2026']) =1">Expected codestream comment string missing</s:assert>
+        <s:assert test="count(com/comment[text()='KB_MASTER_LOSSLESS_10/06/2026']) =1">expected codestream comment string missing</s:assert>
       </s:rule>
 
       <!-- Metadata checks -->
@@ -130,6 +143,8 @@ on "Metamorfoze"
           <s:assert test="rdf:Description/tiff:Software != ''">empty Software element</s:assert>
           <s:assert test="count(rdf:Description/tiff:Model) &gt; 0">missing Model element</s:assert>
           <s:assert test="rdf:Description/tiff:Model != ''">empty Model element</s:assert>
+          <s:assert test="(count(rdf:Description/tiff:Make) &gt; 0)">missing Make tag</s:assert>
+          <s:assert test="(rdf:Description/tiff:Make != '')">empty Make tag</s:assert>
 
           <!-- Checks on RDF representations of EXIF tags -->
           <s:assert test="count(rdf:Description/exif:DateTimeOriginal) &gt; 0">missing DateTimeOriginal element</s:assert>
