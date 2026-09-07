@@ -91,7 +91,8 @@ class CTables:
                         headerValue = (cTabIn[0][colIndex])
                         if fNameIn == "":
                             # Empty cell, don't add file path
-                            logging.warning("empty entry in concordance table {}, (column '{}')".format(fileIn, headerValue))
+                            logging.warning("empty entry in concordance table {}, (column '{}')".format(fileIn,
+                                                                                                        headerValue))
                             self.noWarnings += 1
                             fOut = ""
                         else:
@@ -126,7 +127,8 @@ class CTables:
                                     logging.error("couldn't construct directory path for target {}".format(fNameOut))
                                 fOut = os.path.join("Targets", targetDir, fNameOut)
                             else:
-                                logging.warning("unknown header value '{}' in concordance table {}".format(headerValue, fileIn))
+                                logging.warning("unknown header value '{}' in concordance table {}".format(headerValue,
+                                                                                                           fileIn))
                                 self.noWarnings += 1
                                 fOut = ""
 
