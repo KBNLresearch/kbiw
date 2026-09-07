@@ -53,9 +53,9 @@ class CTables:
         self.extensionsIn, the file extension is changed to jp2"""
 
         listOut = []
+        emptyCols = []
         rowIndex = 0
-        logging.info(
-            "updating concordance table {} to {}".format(fileIn, fileOut))
+        logging.info("updating concordance table {} to {}".format(fileIn, fileOut))
 
         # First part of concordance table name refers to corresponding directory in "Signaturen"
         sigDir = os.path.basename(fileIn).split("_")[0]
@@ -68,65 +68,72 @@ class CTables:
 
         for row in cTabIn:
             if rowIndex == 0:
-                # Header line
-                listOut.append(row)
+                # Header line. First identify and remove any empty columns
+                rowOut = []
+                colIndex = 0
+                for headerItem in row:
+                    if headerItem == "":
+                        logging.warning("empty header value in concordance table {}".format(fileIn))
+                        self.noWarnings += 1
+                        emptyCols.append(colIndex)
+                    else:
+                        rowOut.append(headerItem)
+                    colIndex += 1
+                listOut.append(rowOut)
                 rowIndex += 1
             else:
                 rowOut = []
                 colIndex = 0
                 for fNameIn in row:
-                    # Flag that indicates empty values
-                    emptyFlag = False
-
-                    if fNameIn == "":
-                        emptyFlag = True
-                        logging.warning("empty entry in concordance table {}, (column '{}')".format(fileIn, headerValue))
-                        self.noWarnings += 1
-                    if not emptyFlag:
+                    # Skip empty columns
+                    if colIndex not in emptyCols:
                         # Header value
                         headerValue = (cTabIn[0][colIndex])
-                        # File prefix and extension
-                        pre, ext = os.path.splitext(fNameIn)
-                        ext = ext.strip(".").upper()
-
-                        # Update file extension if needed
-                        if ext in self.extensionsIn:
-                            fNameOut = "{}.{}".format(pre, "jp2")
-                        else:
-                            fNameOut = fNameIn
-
-                        # Add path
-                        if headerValue == "Master":
-                            fOut = os.path.join(masterDirPath, fNameOut)
-
-                        elif headerValue == "Access_Renamed":
-                            fOut = os.path.join(accessDirPath, fNameOut)
-
-                        elif headerValue.startswith("Targets"):
-                            # Target location follows from file base name
-                            try:
-                                nameComponents = pre.split("_")
-                            except IndexError:
-                                nameComponents = []
-                            try:
-                                targetDir = "{}_{}_{}".format(
-                                    nameComponents[0], nameComponents[2], nameComponents[3])
-                            except IndexError:
-                                targetDir = ""
-                                logging.error("couldn't construct directory path for target {}".format(fNameOut))
-                            fOut = os.path.join("Targets", targetDir, fNameOut)
-                        else:
-                            logging.warning("unknown header value '{}' in concordance table {}".format(headerValue, fileIn))
+                        if fNameIn == "":
+                            # Empty cell, don't add file path
+                            logging.warning("empty entry in concordance table {}, (column '{}')".format(fileIn, headerValue))
                             self.noWarnings += 1
+                            fOut = ""
+                        else:
+                            # File prefix and extension
+                            pre, ext = os.path.splitext(fNameIn)
+                            ext = ext.strip(".").upper()
+
+                            # Update file extension if needed
+                            if ext in self.extensionsIn:
+                                fNameOut = "{}.{}".format(pre, "jp2")
+                            else:
+                                fNameOut = fNameIn
+
+                            # Add path
+                            if headerValue == "Master":
+                                fOut = os.path.join(masterDirPath, fNameOut)
+
+                            elif headerValue == "Access_Renamed":
+                                fOut = os.path.join(accessDirPath, fNameOut)
+
+                            elif headerValue.startswith("Targets"):
+                                # Target location follows from file base name
+                                try:
+                                    nameComponents = pre.split("_")
+                                except IndexError:
+                                    nameComponents = []
+                                try:
+                                    targetDir = "{}_{}_{}".format(
+                                        nameComponents[0], nameComponents[2], nameComponents[3])
+                                except IndexError:
+                                    targetDir = ""
+                                    logging.error("couldn't construct directory path for target {}".format(fNameOut))
+                                fOut = os.path.join("Targets", targetDir, fNameOut)
+                            else:
+                                logging.warning("unknown header value '{}' in concordance table {}".format(headerValue, fileIn))
+                                self.noWarnings += 1
+                                fOut = ""
 
                         rowOut.append(fOut)
-                    if emptyFlag:
-                        rowOut.append("")
-
                     colIndex += 1
 
                 rowIndex += 1
-
                 listOut.append(rowOut)
 
         try:
