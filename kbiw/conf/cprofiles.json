@@ -12,6 +12,7 @@
                     "-S",
                     "-E",
                     "-M","32",
+                    "--write-metadata","8",
                     "-C","KB_MASTER_LOSSLESS_10/06/2026"]
 
         },
@@ -27,6 +28,7 @@
                     "-S",
                     "-E",
                     "-M","32",
+                    "--write-metadata","8",
                     "-C","KB_ACCESS_LOSSY_10/06/2026"]
         }
     ]
