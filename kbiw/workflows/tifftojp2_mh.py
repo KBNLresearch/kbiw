@@ -166,7 +166,7 @@ class Workflow:
 
                 if subdirname == "Pakbon":
                     # Files in Pakbon directory
-                    print("Coping files from directory {}".format(thisDirectory))
+                    print("Copying files from directory {}".format(thisDirectory))
                     files = [f for f in os.listdir(thisDirectory) if os.path.isfile(os.path.join(thisDirectory, f))]
                     for file in files:
                         if "pakbon" in file and file.endswith(".xml"):
