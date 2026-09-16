@@ -323,7 +323,7 @@ class Workflow:
                     if foundInputChecksumFile:
                         # Verify checksum against checksum in input batch
                         for row in accessChecksums:
-                            if row[0] == thisFileRel:
+                            if os.path.normpath(row[0]) == thisFileRel:
                                 fileMatch = True
                                 if checksum == row[1]:
                                     checksumMatch = True
