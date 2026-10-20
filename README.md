@@ -212,7 +212,7 @@ This converts all TIFF images (identified by a ".tif" or ".tiff" file extension)
 
 In addition to this, it writes the following files to the root of the output batch:
 
-### summary.xml
+### kbiw-summary.xml
 
 This is an XML file with a brief summary of the results of the workflow. Here's an example:
 
@@ -227,7 +227,7 @@ This is an XML file with a brief summary of the results of the workflow. Here's 
 </kbiw>
 ```
 
-#### manifest.csv
+#### kbiw-manifest.csv
 
 This is a semicolon-delimited file with information about each converted image. It has the following columns:
 
@@ -287,10 +287,15 @@ The file "cprofiles.json" in the configuration defines a set of compression prof
 
 Schemas contain the Schematron rules on which the Jpylyzer check is based. Some background information about this type of rule-based validation can be found in [this blog post](https://www.bitsgalore.org/2012/09/04/automated-assessment-jp2-against-technical-profile). Currently the following schemas are included:
 
-### kbMaster_2026.sch
 
-This is a schema for digitised medieval manuscripts.
+### kbMaster_generic_2026.sch
 
+This is a schema that is based on the latest KB JPEG 2000 specifications for lossles master images.
+
+
+### kbMaster_mh_2026.sch
+
+This is a schema for digitised medieval manuscripts. It is based on kbMaster_generic_2026.sch, but includes addition checks on XMP metadata fields in the UUID box.
 
 <!--
 
