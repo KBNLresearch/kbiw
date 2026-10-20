@@ -2,7 +2,7 @@
     "compressionProfiles":
     [
         {
-         "name":"KB_MASTER_LOSSLESS_10/06/2026",
+         "name":"KB_MASTER_LOSSLESS_20/10/2026",
          "params": ["-n","6",
                     "-p","RPCL",
                     "-t","1024,1024",
@@ -13,11 +13,11 @@
                     "-E",
                     "-M","32",
                     "--write-metadata","8",
-                    "-C","KB_MASTER_LOSSLESS_10/06/2026"]
+                    "-C","KB_MASTER_LOSSLESS_20/10/2026"]
 
         },
         {
-         "name":"KB_ACCESS_LOSSY_10/06/2026",
+         "name":"KB_ACCESS_LOSSY_20/10/2026",
          "params": ["-I",
                     "-n","6",
                     "-p","RPCL",
@@ -29,7 +29,7 @@
                     "-E",
                     "-M","32",
                     "--write-metadata","8",
-                    "-C","KB_ACCESS_LOSSY_10/06/2026"]
+                    "-C","KB_ACCESS_LOSSY_20/10/2026"]
         }
     ]
 }

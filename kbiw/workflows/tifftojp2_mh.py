@@ -25,9 +25,9 @@ class Workflow:
         # List of input extensions that will be converted to JP2
         self.extensionsIn = ["tif", "tiff"]
         # Compression profile (name only, path is added later)
-        self.compressionProfile = "KB_MASTER_LOSSLESS_10/06/2026"
+        self.compressionProfile = "KB_MASTER_LOSSLESS_20/10/2026"
         # Schematron schema used for properties check
-        self.schema = "kbMaster_2026.sch"
+        self.schema = "kbMaster_mh_2026.sch"
         # Delimiter for CSV output
         self.delimiterOut = ";"
         # Batch manifest (name only, path is added later)

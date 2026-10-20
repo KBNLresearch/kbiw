@@ -213,7 +213,7 @@ def main():
         wf = tifftojp2_generic.Workflow()
         wf.kbiwVersion = __version__
         # Compression profile
-        wf.compressionProfile = "KB_MASTER_LOSSLESS_10/06/2026"
+        wf.compressionProfile = "KB_MASTER_LOSSLESS_20/10/2026"
         # Schematron schema used for properties check
         wf.schema = "kbMaster_2026.sch"
         # List with names of directories that must be copied unchanged
@@ -226,7 +226,7 @@ def main():
         wf = tifftojp2_generic.Workflow()
         wf.kbiwVersion = __version__
         # Compression profile
-        wf.compressionProfile = "KB_MASTER_LOSSLESS_10/06/2026"
+        wf.compressionProfile = "KB_MASTER_LOSSLESS_20/10/2026"
         # Schematron schema used for properties check
         wf.schema = "kbMaster_2026.sch"
     elif workflow == "tifftojp2-generic-convertpaletted":
@@ -235,7 +235,7 @@ def main():
         # before converting to JP2, to prevent paletted JP2s
         wf = tifftojp2_generic.Workflow()
         # Compression profile
-        wf.compressionProfile = "KB_MASTER_LOSSLESS_10/06/2026"
+        wf.compressionProfile = "KB_MASTER_LOSSLESS_20/10/2026"
         # Schematron schema used for properties check
         wf.schema = "kbMaster_2026.sch"
         # Convert paletted images to regular colorspace

@@ -1,0 +1,134 @@
+<?xml version="1.0"?>
+<!--
+Schematron jpylyzer schema for lossless preservation masters,
+based on KB_MASTER_LOSSLESS_20/10/2026 JP2 specs
+<s:schema xmlns:s="http://purl.oclc.org/dsdl/schematron">
+<s:ns uri="adobe:ns:meta/" prefix="x"/>
+<s:ns uri="http://www.w3.org/1999/02/22-rdf-syntax-ns#" prefix="rdf"/>
+<s:ns uri="http://ns.adobe.com/exif/1.0/" prefix="exif"/>
+<s:ns uri="http://ns.adobe.com/tiff/1.0/" prefix="tiff"/>
+<s:ns uri="http://ns.adobe.com/photoshop/1.0/" prefix="photoshop"/>
+
+<s:pattern>
+    <s:title>KB master JP2 2026, generic (no colour/resolution requirements)</s:title>
+
+    <!-- check that the jpylyzer element exists -->
+    <s:rule context="/">
+        <s:assert test="file">no file element found</s:assert>
+    </s:rule>
+
+    <!-- top-level Jpylyzer checks -->
+    <s:rule context="/file">
+
+        <!-- check that success value equals 'True' -->
+        <s:assert test="statusInfo/success = 'True'">jpylyzer did not run successfully</s:assert>
+
+        <!-- check that isValid element exists with the text 'True' -->
+        <s:assert test="isValid = 'True'">not valid JP2</s:assert>
+    </s:rule>
+
+    <!-- Top-level properties checks -->
+    <s:rule context="/file/properties">
+
+        <!-- check that UUID box with XMP metadata exists -->
+        <s:assert test="uuidBox and uuidBox/x:xmpmeta">no UUID box with XMP metadata</s:assert>
+
+    </s:rule>
+
+    <!-- Image header box checks -->
+    <s:rule context="/file/properties/jp2HeaderBox/imageHeaderBox">
+        <!-- Check that number of colour components equals 3 -->
+        <s:assert test="nC = '3'">wrong number of colour components</s:assert>
+        <!-- Check that number of bits per component equals 8 -->
+        <s:assert test="bPCDepth = '8'">wrong number of bits per component</s:assert>
+    </s:rule>
+
+    <!-- check that resolution box exists -->
+    <s:rule context="/file/properties/jp2HeaderBox">
+        <s:assert test="resolutionBox">no resolution box</s:assert>
+    </s:rule>
+
+    <!-- check that resolution box contains capture resolution box -->
+    <s:rule context="/file/properties/jp2HeaderBox/resolutionBox">
+        <s:assert test="captureResolutionBox">no capture resolution box</s:assert>
+    </s:rule>
+
+    <!-- check that METH equals 'Restricted ICC' -->
+    <s:rule context="/file/properties/jp2HeaderBox/colourSpecificationBox">
+        <s:assert test="meth = 'Restricted ICC'">METH not 'Restricted ICC'</s:assert>
+    </s:rule>
+
+    <!-- check that ICC profile description equals 'Adobe RGB (1998)' or 'eciRGB v2' -->
+    <s:rule context="file/properties/jp2HeaderBox/colourSpecificationBox/icc">
+        <s:assert test="description = 'Adobe RGB (1998)' or description = 'eciRGB v2'">wrong ICC profile</s:assert>
+    </s:rule>
+
+    <!-- check X- and Y- tile sizes -->
+    <s:rule context="/file/properties/contiguousCodestreamBox/siz">
+        <s:assert test="xTsiz = '1024'">wrong X Tile size</s:assert>
+        <s:assert test="yTsiz = '1024'">wrong Y Tile size</s:assert>
+    </s:rule>
+
+    <!-- checks on codestream COD parameters -->
+
+    <s:rule context="/file/properties/contiguousCodestreamBox/cod">
+
+        <!-- Error resilience features: sop, eph and segmentation symbols -->
+        <s:assert test="sop = 'yes'">no start-of-packet headers</s:assert>
+        <s:assert test="eph = 'yes'">no end-of-packet headers</s:assert>
+        <s:assert test="segmentationSymbols = 'yes'">no segmentation symbols</s:assert>
+
+        <!-- Progression order -->
+        <s:assert test="order = 'RPCL'">wrong progression order</s:assert>
+
+        <!-- Layers -->
+        <s:assert test="layers = '11'">wrong number of layers</s:assert>
+
+        <!-- Colour transformation (only for RGB images, i.e. number of components = 3)-->
+        <s:assert test="(multipleComponentTransformation = 'yes') and
+                        (../../jp2HeaderBox/imageHeaderBox/nC = '3') or
+                        (multipleComponentTransformation = 'no') and
+                        (../../jp2HeaderBox/imageHeaderBox/nC = '1')">no colour transformation</s:assert>
+
+        <!-- Decomposition levels -->
+        <s:assert test="levels = '5'">wrong number of decomposition levels</s:assert>
+
+        <!-- Codeblock size -->
+        <s:assert test="codeBlockWidth = '64'">wrong codeblock width</s:assert>
+        <s:assert test="codeBlockHeight = '64'">wrong codeblock height</s:assert>
+
+        <!-- Transformation (irreversible vs reversible) -->
+        <s:assert test="transformation = '5-3 reversible'">wrong transformation</s:assert>
+
+        <!-- checks on X- and Y- precinct sizes: 256x256 for 2 highest resolution levels,
+              128x128 for remaining ones  -->
+        <s:assert test="precinctSizeX[1] = '128'">precinctSizeX doesn't match profile</s:assert>
+        <s:assert test="precinctSizeX[2] = '128'">precinctSizeX doesn't match profile</s:assert>
+        <s:assert test="precinctSizeX[3] = '128'">precinctSizeX doesn't match profile</s:assert>
+        <s:assert test="precinctSizeX[4] = '128'">precinctSizeX doesn't match profile</s:assert>
+        <s:assert test="precinctSizeX[5] = '256'">precinctSizeX doesn't match profile</s:assert>
+        <s:assert test="precinctSizeX[6] = '256'">precinctSizeX doesn't match profile</s:assert>
+        <s:assert test="precinctSizeY[1] = '128'">precinctSizeY doesn't match profile</s:assert>
+        <s:assert test="precinctSizeY[2] = '128'">precinctSizeY doesn't match profile</s:assert>
+        <s:assert test="precinctSizeY[3] = '128'">precinctSizeY doesn't match profile</s:assert>
+        <s:assert test="precinctSizeY[4] = '128'">precinctSizeY doesn't match profile</s:assert>
+        <s:assert test="precinctSizeY[5] = '256'">precinctSizeY doesn't match profile</s:assert>
+        <s:assert test="precinctSizeY[6] = '256'">precinctSizeY doesn't match profile</s:assert>
+
+    </s:rule>
+
+    <!-- Check specs reference as codestream comment -->
+    <!-- Rule looks for one exact match, additional codestream comments are permitted -->
+    <s:rule context="/file/properties/contiguousCodestreamBox">
+        <s:assert test="count(com/comment[text()='KB_MASTER_LOSSLESS_20/10/2026']) =1">expected codestream comment string missing</s:assert>
+    </s:rule>
+
+    <!-- Metadata checks -->
+    <s:rule context="/file/properties/uuidBox/x:xmpmeta">
+        <!-- Check that RDF element exists -->
+        <s:assert test="rdf:RDF">missing RDF element</s:assert>
+    </s:rule>
+
+</s:pattern>
+</s:schema>
+

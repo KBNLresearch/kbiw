@@ -172,8 +172,12 @@ class TiffToJP2:
                 self.noErrors += 1
 
             # Analyze JP2 with Jpylyzer and evaluate output against Schematron policy
-            status, schTestsFailed, jpTestsFailed, pallettedFlag = propertiescheck.propertiesCheck(
+            status, schTestsFailed, jpTestsFailed, pallettedFlag, noErrors, noWarnings = propertiescheck.propertiesCheck(
                 fileOut, self.schema)
+
+            # Add any errors and warnings from properties checking to general error, warning count
+            self.noErrors += noErrors
+            self.noWarnings += noWarnings
 
             if status == "pass":
                 successJpylyzerCheck = True

@@ -1,9 +1,7 @@
 <?xml version="1.0"?>
 <!--
-Schematron jpylyzer schema for KB lossless preservation master (A.K.A. KB_MASTER_LOSSLESS_10/06/2026)
-TODO: formalize to spec with proper name/identifier, e.g. "Middeleeuwse Handschriften", "Beeldstudio"
-on "Metamorfoze"
--->
+Schematron jpylyzer schema for Middeleeuwse Handschriften  lossless preservation masters,
+based on KB_MASTER_LOSSLESS_20/10/2026 JP2 specs + additional metadata requirements
 <s:schema xmlns:s="http://purl.oclc.org/dsdl/schematron">
 <s:ns uri="adobe:ns:meta/" prefix="x"/>
 <s:ns uri="http://www.w3.org/1999/02/22-rdf-syntax-ns#" prefix="rdf"/>
@@ -122,7 +120,7 @@ on "Metamorfoze"
     <!-- Check specs reference as codestream comment -->
     <!-- Rule looks for one exact match, additional codestream comments are permitted -->
     <s:rule context="/file/properties/contiguousCodestreamBox">
-        <s:assert test="count(com/comment[text()='KB_MASTER_LOSSLESS_10/06/2026']) =1">expected codestream comment string missing</s:assert>
+        <s:assert test="count(com/comment[text()='KB_MASTER_LOSSLESS_20/10/2026']) =1">expected codestream comment string missing</s:assert>
       </s:rule>
 
       <!-- Metadata checks -->
@@ -163,10 +161,7 @@ on "Metamorfoze"
           <s:assert test="rdf:Description/photoshop:Headline != ''">empty Headline element</s:assert>
           <s:assert test="count(rdf:Description/photoshop:Credit) &gt; 0">missing Credit element</s:assert>
           <s:assert test="rdf:Description/photoshop:Credit != ''">empty Credit element</s:assert>
-
-</s:rule>
-
-
+    </s:rule>
 
 </s:pattern>
 </s:schema>
