@@ -1,7 +1,7 @@
 <?xml version="1.0"?>
 <!--
 Schematron jpylyzer schema for lossless preservation masters,
-based on KB_MASTER_LOSSLESS_20/10/2026 JP2 specs
+based on KB_MASTER_LOSSLESS_20/10/2026 JP2 specs -->
 <s:schema xmlns:s="http://purl.oclc.org/dsdl/schematron">
 <s:ns uri="adobe:ns:meta/" prefix="x"/>
 <s:ns uri="http://www.w3.org/1999/02/22-rdf-syntax-ns#" prefix="rdf"/>
@@ -131,4 +131,3 @@ based on KB_MASTER_LOSSLESS_20/10/2026 JP2 specs
 
 </s:pattern>
 </s:schema>
-
