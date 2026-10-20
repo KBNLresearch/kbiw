@@ -29,9 +29,9 @@ class Workflow:
         # Delimiter for CSV output
         self.delimiterOut = ";"
         # Batch manifest (name only, path is added later)
-        self.batchManifest = "manifest.csv"
+        self.batchManifest = "kbiw-manifest.csv"
         # Summary file (name only, path is added later)
-        self.summaryFile = "summary.xml"
+        self.summaryFile = "kbiw-summary.xml"
         # Checksum file (name only, path is added later)
         self.checksumFile = "checksums.sha512"
         # Number of errors encountered during workflow
