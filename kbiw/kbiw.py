@@ -215,7 +215,7 @@ def main():
         # Compression profile
         wf.compressionProfile = "KB_MASTER_LOSSLESS_20/10/2026"
         # Schematron schema used for properties check
-        wf.schema = "kbMaster_2026.sch"
+        wf.schema = "kbMaster_generic_2026.sch"
         # List with names of directories that must be copied unchanged
         wf.copyDirs = ["Afgeleiden",
                        "Rapportages_meetresultaten",
@@ -228,7 +228,7 @@ def main():
         # Compression profile
         wf.compressionProfile = "KB_MASTER_LOSSLESS_20/10/2026"
         # Schematron schema used for properties check
-        wf.schema = "kbMaster_2026.sch"
+        wf.schema = "kbMaster_generic_2026.sch"
     elif workflow == "tifftojp2-generic-convertpaletted":
         # Generic workflow - input batch only contains TIFF images
         # Convert any paletted TIFFs to (temporary) "normal" TIFF
@@ -237,7 +237,7 @@ def main():
         # Compression profile
         wf.compressionProfile = "KB_MASTER_LOSSLESS_20/10/2026"
         # Schematron schema used for properties check
-        wf.schema = "kbMaster_2026.sch"
+        wf.schema = "kbMaster_generic_2026.sch"
         # Convert paletted images to regular colorspace
         wf.convertPalettedImages = True
 
