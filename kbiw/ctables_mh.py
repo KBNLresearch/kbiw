@@ -15,6 +15,8 @@ class CTables:
 
         self.noErrors = 0
         self.noWarnings = 0
+        self.errors = []
+        self.warnings = []
         self.dirConcordanceIn = dirConcordanceIn
         self.dirIn = dirIn
         self.dirOut = dirOut
@@ -73,8 +75,10 @@ class CTables:
                 colIndex = 0
                 for headerItem in row:
                     if headerItem == "":
-                        logging.warning("empty header value in concordance table {}".format(fileIn))
+                        msg = "empty header value in concordance table {}".format(fileIn)
+                        logging.warning(msg)
                         self.noWarnings += 1
+                        self.warnings.append(msg)
                         emptyCols.append(colIndex)
                     else:
                         rowOut.append(headerItem)
@@ -91,9 +95,11 @@ class CTables:
                         headerValue = (cTabIn[0][colIndex])
                         if fNameIn == "":
                             # Empty cell, don't add file path
-                            logging.warning("empty entry in concordance table {}, (column '{}')".format(fileIn,
-                                                                                                        headerValue))
+                            msg = "empty entry in concordance table {}, (column '{}')".format(fileIn,
+                                                                                              headerValue)
+                            logging.warning(msg)
                             self.noWarnings += 1
+                            self.warnings.append(msg)
                             fOut = ""
                         else:
                             # File prefix and extension
@@ -124,12 +130,16 @@ class CTables:
                                         nameComponents[0], nameComponents[2], nameComponents[3])
                                 except IndexError:
                                     targetDir = ""
-                                    logging.error("couldn't construct directory path for target {}".format(fNameOut))
+                                    msg = "couldn't construct directory path for target {}".format(fNameOut)
+                                    logging.error(msg)
+                                    self.errors.append(msg)
                                 fOut = os.path.join("Targets", targetDir, fNameOut)
                             else:
-                                logging.warning("unknown header value '{}' in concordance table {}".format(headerValue,
-                                                                                                           fileIn))
+                                msg = "unknown header value '{}' in concordance table {}".format(headerValue,
+                                                                                                 fileIn)
+                                logging.warning(msg)
                                 self.noWarnings += 1
+                                self.warnings.append(msg)
                                 fOut = ""
 
                         rowOut.append(fOut)
@@ -169,9 +179,10 @@ class CTables:
 
         # Stop here if concordance dir doesn't exist
         if not os.path.isdir(self.dirConcordanceOut):
-            logging.error("concordance directory {} does not exist".format(
-                self.dirConcordanceOut))
+            msg = "concordance directory {} does not exist".format(self.dirConcordanceOut)
+            logging.error(msg)
             self.noErrors += 1
+            self.errors.append(msg)
             return
         cTables = os.listdir(self.dirConcordanceOut)
         for cTable in cTables:
@@ -197,15 +208,17 @@ class CTables:
             for image in imagesCTable:
                 # Check against batch manifest
                 if image not in imagesManifest:
-                    logging.error(
-                        "image {} not found in batch manifest".format(image))
+                    msg = "image {} not found in batch manifest".format(image)
+                    logging.error(msg)
                     self.noErrors += 1
+                    self.errors.append(msg)
                 # Add image to combined list of image references from all concordance tables
                 imagesAllCTables.append(image)
 
         # Reverse check
         for image in imagesManifest:
             if image not in imagesAllCTables:
-                logging.error(
-                    "image {} from batch manifest not referenced in any concordance table".format(image))
+                msg = "image {} from batch manifest not referenced in any concordance table".format(image)
+                logging.error(msg)
                 self.noErrors += 1
+                self.errors.append(msg)

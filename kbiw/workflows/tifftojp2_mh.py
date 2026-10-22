@@ -211,6 +211,8 @@ class Workflow:
             # Add any errors and warnings from concordance updating / checking to general error, warning count
             self.noErrors += myCTables.noErrors
             self.noWarnings += myCTables.noWarnings
+            self.errors.extend(myCTables.errors)
+            self.warnings.extend(myCTables.warnings)
         except UnboundLocalError:
             # We end up here if myCtables is undefined
             msg = "no concordance tables found in batch"
@@ -258,7 +260,7 @@ class Workflow:
                 # Write row to batch manifest
                 with open(self.batchManifest, 'a', newline='', encoding='utf-8') as fManifest:
                     writer = csv.writer(fManifest, delimiter=self.delimiterOut)
-                    # add two empy columns to fit access fields
+                    # add two empty columns to fit access fields
                     rowBm = self.tifftoJP2Instance.rowBm
                     rowBm.extend(["na", "na"])
                     writer.writerow(rowBm)
