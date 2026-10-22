@@ -65,6 +65,8 @@ def propertiesCheck(JP2, schema):
     pallettedFlag = False
     noErrors = 0
     noWarnings = 0
+    errors = []
+    warnings = []
 
     # Initialise empty text string for error log output
     ptOutString = ""
@@ -77,8 +79,10 @@ def propertiesCheck(JP2, schema):
             pallettedFlag = True
 
     except Exception:
-        logging.error("error while running jpylyzer")
+        msg = "error while running jpylyzer"
+        logging.error(msg)
         noErrors += 1
+        errors.append(msg)
 
     try:
         # Start Schematron magic ...
@@ -96,8 +100,10 @@ def propertiesCheck(JP2, schema):
         report = schematron.validation_report
 
     except Exception:
-        logging.error("error while running Schematron")
+        msg = "error while running Schematron"
+        logging.error(msg)
         noErrors += 1
+        errors.append(msg)
 
     # Parse output of Schematron validation and extract
     # info on failed tests
@@ -106,15 +112,19 @@ def propertiesCheck(JP2, schema):
         if len(schematronTestsFailed) == 0:
             status = "pass"
     except Exception:
-        logging.error("error while parsing Schematron report")
+        msg = "error while parsing Schematron report"
+        logging.error(msg)
         noErrors += 1
+        errors.append(msg)
 
     # Parse jpylyzer XML output and extract info on failed tests
     # in case image is not valid JP2
     try:
         jpylyzerTestsFailed = extractJpylyzer(resultJpylyzer)
     except Exception:
-        logging.error("error while parsing jpylyzer output")
+        msg = "error while parsing jpylyzer output"
+        logging.error(msg)
         noErrors += 1
+        errors.append(msg)
 
-    return status, schematronTestsFailed, jpylyzerTestsFailed, pallettedFlag, noErrors, noWarnings
+    return status, schematronTestsFailed, jpylyzerTestsFailed, pallettedFlag, noErrors, noWarnings, errors, warnings
