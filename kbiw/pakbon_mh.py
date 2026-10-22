@@ -13,6 +13,9 @@ class Pakbon:
     def __init__(self, dirIn, dirOut):
 
         self.noErrors = 0
+        self.noWarnings = 0
+        self.errors = []
+        self.warnings = []
         self.dirIn = dirIn
         self.dirOut = dirOut
 
@@ -135,11 +138,15 @@ class Pakbon:
                 pbroot = tree.getroot()
                 parsedPakbonIn = True
             except Exception:
-                logging.error("cannot parse XML in {}".format(pakbonIn))
+                msg = "cannot parse XML in {}".format(pakbonIn)
+                logging.error(msg)
                 self.noErrors += 1
+                self.errors.append(msg)
         else:
-            logging.error("missing pakbon file in input batch")
+            msg = "missing pakbon file in input batch"
+            logging.error(msg)
             self.noErrors += 1
+            self.errors.append(msg)
 
         if parsedPakbonIn:
 
@@ -179,5 +186,7 @@ class Pakbon:
             try:
                 tree.write(pakbonOut)
             except Exception:
-                logging.error("cannot write XML to {}".format(pakbonOut))
+                msg = "cannot write XML to {}".format(pakbonOut)
+                logging.error(msg)
                 self.noErrors += 1
+                self.errors.append(msg)

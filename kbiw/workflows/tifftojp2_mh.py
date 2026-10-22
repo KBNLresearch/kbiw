@@ -224,6 +224,9 @@ class Workflow:
         PakbonInstance = pakbon_mh.Pakbon(self.dirIn, self.dirOut)
         PakbonInstance.writePakbon()
         self.noErrors += PakbonInstance.noErrors
+        self.noWarnings += PakbonInstance.noWarnings
+        self.errors.extend(PakbonInstance.errors)
+        self.warnings.extend(PakbonInstance.warnings)
 
         # Dictionary with key/value pairs for summary file
         summaryDict = {"kbiwVersion": self.kbiwVersion,
