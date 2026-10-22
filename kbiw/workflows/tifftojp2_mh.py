@@ -40,6 +40,10 @@ class Workflow:
         self.noErrors = 0
         # Number of warnings encountered during workflow
         self.noWarnings = 0
+        # List with errors
+        self.errors = []
+        # List with warnings
+        self.warnings = []
         # Input batch directory (set in main kbiw.py module)
         self.dirIn = None
         # Output batch directory (set in main kbiw.py module)
@@ -178,8 +182,10 @@ class Workflow:
                             try:
                                 shutil.copyfile(fileIn, fileOut)
                             except Exception:
-                                logging.error("cannot copy file to {}".format(fileOut))
+                                msg = "cannot copy file to {}".format(fileOut)
+                                logging.error(msg)
                                 self.noErrors += 1
+                                self.errors.append(msg)
 
                 if subdirname == "Concordantie":
                     # Update concordance tables
@@ -207,8 +213,10 @@ class Workflow:
             self.noWarnings += myCTables.noWarnings
         except UnboundLocalError:
             # We end up here if myCtables is undefined
-            logging.error("no concordance tables found in batch")
+            msg = "no concordance tables found in batch"
+            logging.error(msg)
             self.noErrors += 1
+            self.errors.append(msg)
 
         # Write Pakbon file
         PakbonInstance = pakbon_mh.Pakbon(self.dirIn, self.dirOut)
@@ -284,8 +292,10 @@ class Workflow:
                 reader = csv.reader(fCA, delimiter=",")
                 accessChecksums = list(reader)
         else:
-            logging.error("missing checksum file for access images in input batch")
+            msg = "missing checksum file for access images in input batch"
+            logging.error(msg)
             self.noErrors += 1
+            self.errors.append(msg)
 
         dirPathInRel = os.path.relpath(dirIn, start=self.dirIn)
         dirPathIn = os.path.abspath(os.path.join(self.dirIn, dirPathInRel))
@@ -295,9 +305,11 @@ class Workflow:
         try:
             shutil.copytree(dirPathIn, dirPathOut, dirs_exist_ok=True)
         except Exception:
-            logging.error("copying data from directory {} to {} resulted in an exception".format(
-                dirPathIn, dirPathOut))
+            msg = "copying data from directory {} to {} resulted in an exception".format(dirPathIn,
+                                                                                         dirPathOut)
+            logging.error(msg)
             self.noErrors += 1
+            self.errors.append(msg)
 
         # Iterate over files
         for dirname, dirnames, filenames in os.walk(dirPathOut):
@@ -329,11 +341,15 @@ class Workflow:
                                     checksumMatch = True
 
                     if not fileMatch:
-                        logging.error("no matching record in checksum file for {}".format(thisFileRel))
+                        msg = "no matching record in checksum file for {}".format(thisFileRel)
+                        logging.error(msg)
                         self.noErrors += 1
+                        self.errors.append(msg)
                     if not checksumMatch:
-                        logging.error("checksum check unsuccessful for {}".format(thisFileRel))
+                        msg = "checksum check unsuccessful for {}".format(thisFileRel)
+                        logging.error(msg)
                         self.noErrors += 1
+                        self.errors.append(msg)
 
                     # Write row to batch manifest
                     with open(self.batchManifest, 'a', newline='', encoding='utf-8') as fManifest:

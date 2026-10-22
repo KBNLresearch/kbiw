@@ -38,6 +38,10 @@ class Workflow:
         self.noErrors = 0
         # Number of warnings encountered during workflow
         self.noWarnings = 0
+        # List with errors
+        self.errors = []
+        # List with warnings
+        self.warnings = []
         # Input batch directory (set in main kbiw.py module)
         self.dirIn = None
         # Output batch directory (set in main kbiw.py module)
@@ -198,9 +202,11 @@ class Workflow:
         try:
             shutil.copytree(dirPathIn, dirPathOut, dirs_exist_ok=True)
         except Exception:
-            logging.error("copying data from directory {} to {} resulted in an exception".format(
-                dirPathIn, dirPathOut))
+            msg = "copying data from directory {} to {} resulted in an exception".format(dirPathIn,
+                                                                                         dirPathOut)
+            logging.error(msg)
             self.noErrors += 1
+            self.errors.append(msg)
 
         # Iterate over files
         for dirname, dirnames, filenames in os.walk(dirPathOut):
