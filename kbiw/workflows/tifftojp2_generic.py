@@ -149,7 +149,7 @@ class Workflow:
                        "comment": "See batch manifest and log file for details on errors and warnings"}
 
         # Write summary file
-        SummaryFileInstance = summaryfile.SummaryFile(self.summaryFile, summaryDict)
+        SummaryFileInstance = summaryfile.SummaryFile(self.summaryFile, summaryDict, self.errors, self.warnings)
         SummaryFileInstance.writeSummaryFile()
 
         self.noErrors += SummaryFileInstance.noErrors
@@ -172,6 +172,8 @@ class Workflow:
                 self.tifftoJP2Instance.convertImage(thisFile)
                 self.noErrors += self.tifftoJP2Instance.noErrors
                 self.noWarnings += self.tifftoJP2Instance.noWarnings
+                self.errors.extend(self.tifftoJP2Instance.errors)
+                self.warnings.extend(self.tifftoJP2Instance.warnings)
 
                 # Write row to batch manifest
                 with open(self.batchManifest, 'a', newline='', encoding='utf-8') as fManifest:
