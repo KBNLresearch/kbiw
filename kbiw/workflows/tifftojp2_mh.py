@@ -236,7 +236,7 @@ class Workflow:
                        "comment": "See batch manifest and log file for details on errors and warnings"}
 
         # Write summary file
-        SummaryFileInstance = summaryfile.SummaryFile(self.summaryFile, summaryDict)
+        SummaryFileInstance = summaryfile.SummaryFile(self.summaryFile, summaryDict, self.errors, self.warnings)
         SummaryFileInstance.writeSummaryFile()
 
         self.noErrors += SummaryFileInstance.noErrors
