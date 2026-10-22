@@ -32,6 +32,10 @@ class TiffToJP2:
         self.noErrors = 0
         # Number of warnings encountered during workflow
         self.noWarnings = 0
+        # List with errors
+        self.errors = []
+        # List with warnings
+        self.warnings = []
         # Input batch directory
         self.dirIn = None
         # Output batch directory
@@ -115,9 +119,10 @@ class TiffToJP2:
                     logging.info(
                         "palette conversion successful: {}".format(pSuccess))
             except Exception:
-                logging.warning(
-                    "ExifTool couldn't extract IFD0:PhotometricInterpretation tag")
+                msg = "ExifTool couldn't extract IFD0:PhotometricInterpretation tag"
+                logging.warning(msg)
                 self.noWarnings += 1
+                self.warnings.append(msg)
 
         # Pass I/O to Grok instance and run the conversion
         if convertFromUnpaletted and pcSuccess:
@@ -134,11 +139,15 @@ class TiffToJP2:
             successGrok = True
             logging.info("grok.compress completed successfully")
         elif self.grokInstance.status != 0:
-            logging.error("abnormal grk_compress exit status")
+            msg = "abnormal grk_compress exit status"
+            logging.error(msg)
             self.noErrors += 1
+            self.errors.append(msg)
         if not self.grokInstance.success:
-            logging.error("grok.compress function resulted in an exception")
+            msg = "grok.compress function resulted in an exception"
+            logging.error(msg)
             self.noErrors += 1
+            self.errors.append(msg)
 
         logging.info("grk_compress stdout: {}".format(self.grokInstance.out))
         logging.info("grk_compress stderr: {}".format(
@@ -149,9 +158,10 @@ class TiffToJP2:
             try:
                 os.remove(fTmp)
             except Exception:
-                logging.warning(
-                    "couldn't remove temporary file {}".format(fTmp))
+                msg = "couldn't remove temporary file {}".format(fTmp)
+                logging.warning(msg)
                 self.noWarnings += 1
+                self.warnings.append(msg)
 
         if successGrok:
 
@@ -166,10 +176,11 @@ class TiffToJP2:
                 successExifTool = True
                 logging.info("copied metadata from TIFF to JP2")
             except Exception:
-                logging.error(
-                    "ExifTool failed to copy metadata from TIFF to JP2")
+                msg = "ExifTool failed to copy metadata from TIFF to JP2"
+                logging.error(msg)
                 successExifTool = False
                 self.noErrors += 1
+                self.errors.append(msg)
 
             # Analyze JP2 with Jpylyzer and evaluate output against Schematron policy
             status, schTestsFailed, jpTestsFailed, pallettedFlag, noErrors, noWarnings = propertiescheck.propertiesCheck(
@@ -189,35 +200,43 @@ class TiffToJP2:
                     schTestsFailedOut.append(schtest[0])
 
                 schTestsFailedStr = '|'.join(schTestsFailedOut)
-                logging.warning("image does not conform to Schematron rules")
+                msg = "image does not conform to Schematron rules"
+                logging.warning(msg)
                 self.noWarnings += 1
+                self.warnings.append(msg)
 
             try:
                 # Check on pixel values (skip for paletted images, because LibVips can't handle paletted JP2s)
                 if not pallettedFlag:
                     ssDiff = self.vipsInstance.sumSqDiff(fileIn, fileOut)
                     if ssDiff is None:
-                        logging.error("pixel check failed with exception")
+                        msg = "pixel check failed with exception"
+                        logging.error(msg)
                         self.noErrors += 1
+                        self.errors.append(msg)
                     if ssDiff == 0:
-                        logging.info(
-                            "pixel values of input and output images are identical")
+                        logging.info("pixel values of input and output images are identical")
                         successPixelCheck = True
                     else:
-                        logging.warning(
-                            "pixel values of input and output images are not identical")
+                        msg = "pixel values of input and output images are not identical"
+                        logging.warning(msg)
                         self.noWarnings += 1
+                        self.warnings.append(msg)
                     logging.info(
                         "Sum of squared pixel differences: {}".format(ssDiff))
                 else:
                     ssDiff = None
-                    logging.warning("paletted image, skipped pixel check")
+                    msg = "paletted image, skipped pixel check"
+                    logging.warning(msg)
                     self.noWarnings += 1
+                    self.warnings.append(msg)
 
             except Exception:
-                logging.error("pixel check failed")
+                msg = "pixel check failed"
+                logging.error(msg)
                 ssDiff = None
                 self.noErrors += 1
+                self.errors.append(msg)
 
             # File reference, relative to output directory
             fileOutRel = os.path.relpath(fileOut, start=self.dirOut)
