@@ -79,8 +79,6 @@ class Workflow:
         self.tifftoJP2Instance.cprofilesDict = self.cprofilesDict
         self.tifftoJP2Instance.compressionProfile = self.compressionProfile
         self.tifftoJP2Instance.schema = self.schema
-        self.tifftoJP2Instance.noErrors = self.noErrors
-        self.tifftoJP2Instance.noWarnings = self.noWarnings
         self.tifftoJP2Instance.dirIn = self.dirIn
         self.tifftoJP2Instance.dirOut = self.dirOut
         self.tifftoJP2Instance.grokInstance = self.grokInstance
@@ -255,6 +253,11 @@ class Workflow:
             thisExtension = os.path.splitext(thisFile)[1]
             thisExtension = thisExtension.upper().strip('.')
             if thisExtension in self.extensionsIn:
+                # Reset error, warning variable of tifftoJP2Instance
+                self.tifftoJP2Instance.noErrors = 0
+                self.tifftoJP2Instance.noWarnings = 0
+                self.tifftoJP2Instance.errors = []
+                self.tifftoJP2Instance.warnings = []
                 # Convert image and perform quality checks
                 self.tifftoJP2Instance.convertImage(thisFile)
                 self.noErrors += self.tifftoJP2Instance.noErrors
