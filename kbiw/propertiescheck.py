@@ -115,7 +115,7 @@ class PropertiesCheck:
         try:
             self.extractSchematron(report)
             if len(self.schematronTestsFailed) == 0:
-                status = "pass"
+                self.status = "pass"
         except Exception:
             msg = "error while parsing Schematron report"
             logging.error(msg)
