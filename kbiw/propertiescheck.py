@@ -10,121 +10,124 @@ from lxml import isoschematron
 from lxml import etree
 
 
-def extractSchematron(report):
-    """Parse output of Schematron validation and extract failed tests"""
+class PropertiesCheck:
+    """Properties check class"""
 
-    testsFailed = []
+    def __init__(self, schema):
 
-    for elem in report.iter():
-        if elem.tag == "{http://purl.oclc.org/dsdl/svrl}failed-assert":
+        # Schematron schema used for properties check
+        self.schema = schema
+        # Number of errors encountered during properties check
+        self.noErrors = 0
+        # Number of warnings encountered during properties check
+        self.noWarnings = 0
+        # List with errors
+        self.errors = []
+        # List with warnings
+        self.warnings = []
+        # Properties check status
+        self.status = "Fail"
+        # List with failed Schematron tests
+        self.schematronTestsFailed = []
+        # List with failed Jpylyzer tests
+        self.jpylyzerTestsFailed = []
+        # Flag that indicates a paletted image
+        self.pallettedFlag = False
 
-            # Extract test definition and text description
-            test = elem.get('test')
+    def extractSchematron(self, report):
+        """Parse output of Schematron validation and extract failed tests"""
 
-            for subelem in elem.iter():
-                if subelem.tag == "{http://purl.oclc.org/dsdl/svrl}text":
-                    description = (subelem.text)
-            testsFailed.append([test, description])
+        for elem in report.iter():
+            if elem.tag == "{http://purl.oclc.org/dsdl/svrl}failed-assert":
 
-    return testsFailed
+                # Extract test definition and text description
+                test = elem.get('test')
 
+                for subelem in elem.iter():
+                    if subelem.tag == "{http://purl.oclc.org/dsdl/svrl}text":
+                        description = (subelem.text)
+                self.schematronTestsFailed.append([test, description])
 
-def extractJpylyzer(resultJpylyzer):
-    """Parse output of Jpylyzer and extract failed validation tests"""
+    def extractJpylyzer(self, resultJpylyzer):
+        """Parse output of Jpylyzer and extract failed validation tests"""
 
-    testsFailed = []
-    validationOutcome = resultJpylyzer.find("isValid").text
+        validationOutcome = resultJpylyzer.find("isValid").text
 
-    if validationOutcome == "False":
+        if validationOutcome == "False":
 
-        # Locate test elements
+            # Locate test elements
 
-        for element in resultJpylyzer.iter():
-            if element.tag == "tests":
-                testsElt = element
+            for element in resultJpylyzer.iter():
+                if element.tag == "tests":
+                    testsElt = element
 
-        # Iterate over tests element and report names of all
-        # tags thatcorrespond to tests that failed
+            # Iterate over tests element and report names of all
+            # tags thatcorrespond to tests that failed
 
-        tests = list(testsElt.iter())
+            tests = list(testsElt.iter())
 
-        for j in tests:
-            if j.text == "False":
-                testsFailed.append(j.tag)
+            for j in tests:
+                if j.text == "False":
+                    self.jpylyzerTestsFailed.append(j.tag)
 
-    return testsFailed
+    def checkProperties(self, JP2):
+        """Do properties check on one JP2"""
 
+        # Initialise empty text string for error log output
+        ptOutString = ""
 
-def propertiesCheck(JP2, schema):
-    """Do properties check on one JP2"""
+        # Run jpylyzer on image and write result to text file
+        try:
+            resultJpylyzer = jpylyzer.checkOneFile(JP2)
+            resultAsXML = ET.tostring(resultJpylyzer, 'UTF-8', 'xml')
+            if resultJpylyzer.find('properties/jp2HeaderBox/paletteBox'):
+                self.pallettedFlag = True
 
-    # Initialise output variables
-    status = "fail"
-    schematronTestsFailed = ""
-    jpylyzerTestsFailed = ""
-    pallettedFlag = False
-    noErrors = 0
-    noWarnings = 0
-    errors = []
-    warnings = []
+        except Exception:
+            msg = "error while running jpylyzer"
+            logging.error(msg)
+            self.noErrors += 1
+            self.errors.append(msg)
 
-    # Initialise empty text string for error log output
-    ptOutString = ""
+        try:
+            # Start Schematron magic ...
 
-    # Run jpylyzer on image and write result to text file
-    try:
-        resultJpylyzer = jpylyzer.checkOneFile(JP2)
-        resultAsXML = ET.tostring(resultJpylyzer, 'UTF-8', 'xml')
-        if resultJpylyzer.find('properties/jp2HeaderBox/paletteBox'):
-            pallettedFlag = True
+            schema_doc = etree.parse(self.schema)
+            schematron = isoschematron.Schematron(schema_doc,
+                                                store_report=True)
 
-    except Exception:
-        msg = "error while running jpylyzer"
-        logging.error(msg)
-        noErrors += 1
-        errors.append(msg)
+            # Reparse jpylyzer XML with lxml since using ET object
+            # directly doesn't work
+            resJpylyzerLXML = etree.fromstring(resultAsXML)
 
-    try:
-        # Start Schematron magic ...
+            # Validate jpylyzer output against schema
+            schemaValidationResult = schematron.validate(resJpylyzerLXML)
+            report = schematron.validation_report
 
-        schema_doc = etree.parse(schema)
-        schematron = isoschematron.Schematron(schema_doc,
-                                              store_report=True)
+        except Exception:
+            msg = "error while running Schematron"
+            logging.error(msg)
+            self.noErrors += 1
+            self.errors.append(msg)
 
-        # Reparse jpylyzer XML with lxml since using ET object
-        # directly doesn't work
-        resJpylyzerLXML = etree.fromstring(resultAsXML)
+        # Parse output of Schematron validation and extract
+        # info on failed tests
+        try:
+            self.extractSchematron(report)
+            if len(self.schematronTestsFailed) == 0:
+                status = "pass"
+        except Exception:
+            msg = "error while parsing Schematron report"
+            logging.error(msg)
+            self.noErrors += 1
+            self.errors.append(msg)
 
-        # Validate jpylyzer output against schema
-        schemaValidationResult = schematron.validate(resJpylyzerLXML)
-        report = schematron.validation_report
-
-    except Exception:
-        msg = "error while running Schematron"
-        logging.error(msg)
-        noErrors += 1
-        errors.append(msg)
-
-    # Parse output of Schematron validation and extract
-    # info on failed tests
-    try:
-        schematronTestsFailed = extractSchematron(report)
-        if len(schematronTestsFailed) == 0:
-            status = "pass"
-    except Exception:
-        msg = "error while parsing Schematron report"
-        logging.error(msg)
-        noErrors += 1
-        errors.append(msg)
-
-    # Parse jpylyzer XML output and extract info on failed tests
-    # in case image is not valid JP2
-    try:
-        jpylyzerTestsFailed = extractJpylyzer(resultJpylyzer)
-    except Exception:
-        msg = "error while parsing jpylyzer output"
-        logging.error(msg)
-        noErrors += 1
-        errors.append(msg)
-
-    return status, schematronTestsFailed, jpylyzerTestsFailed, pallettedFlag, noErrors, noWarnings, errors, warnings
+        # Parse jpylyzer XML output and extract info on failed tests
+        # in case image is not valid JP2
+        try:
+            self.extractJpylyzer(resultJpylyzer)
+        except Exception:
+            msg = "error while parsing jpylyzer output"
+            logging.error(msg)
+            self.noErrors += 1
+            self.errors.append(msg)

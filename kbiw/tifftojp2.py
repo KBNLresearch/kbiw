@@ -183,21 +183,22 @@ class TiffToJP2:
                 self.errors.append(msg)
 
             # Analyze JP2 with Jpylyzer and evaluate output against Schematron policy
-            status, schTestsFailed, jpTestsFailed, pallettedFlag, noErrors, noWarnings, errors, warnings = propertiescheck.propertiesCheck(fileOut, self.schema)
+            pCheck = propertiescheck.PropertiesCheck(self.schema)
+            pCheck.checkProperties(fileOut)
 
             # Add any errors and warnings from properties checking to general error, warning count
-            self.noErrors += noErrors
-            self.noWarnings += noWarnings
-            self.errors.extend(errors)
-            self.warnings.extend(warnings)
+            self.noErrors += pCheck.noErrors
+            self.noWarnings += pCheck.noWarnings
+            self.errors.extend(pCheck.errors)
+            self.warnings.extend(pCheck.warnings)
 
-            if status == "pass":
+            if pCheck.status == "pass":
                 successJpylyzerCheck = True
                 logging.info("image conforms to Schematron rules")
             else:
                 # Add failed tests to pipe-delimited string that is included in summary file
                 schTestsFailedOut = []
-                for schtest in schTestsFailed:
+                for schtest in pCheck.schematronTestsFailed:
                     schTestsFailedOut.append(schtest[0])
 
                 schTestsFailedStr = '|'.join(schTestsFailedOut)
@@ -208,7 +209,7 @@ class TiffToJP2:
 
             try:
                 # Check on pixel values (skip for paletted images, because LibVips can't handle paletted JP2s)
-                if not pallettedFlag:
+                if not pCheck.pallettedFlag:
                     ssDiff = self.vipsInstance.sumSqDiff(fileIn, fileOut)
                     if ssDiff is None:
                         msg = "pixel check failed with exception"
@@ -248,7 +249,7 @@ class TiffToJP2:
             self.rowBm = [fileOutRel,
                           successGrok,
                           successExifTool,
-                          pallettedFlag,
+                          pCheck.pallettedFlag,
                           successPixelCheck,
                           successJpylyzerCheck,
                           schTestsFailedStr]
