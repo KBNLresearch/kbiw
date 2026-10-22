@@ -183,6 +183,7 @@ class TiffToJP2:
                 self.errors.append(msg)
 
             # Analyze JP2 with Jpylyzer and evaluate output against Schematron policy
+            # TODO add errors, warnings from properties check to to self.errors, self.wanings
             status, schTestsFailed, jpTestsFailed, pallettedFlag, noErrors, noWarnings = propertiescheck.propertiesCheck(
                 fileOut, self.schema)
 
