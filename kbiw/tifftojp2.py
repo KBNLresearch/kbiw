@@ -81,6 +81,7 @@ class TiffToJP2:
         successExifTool = False
         successPixelCheck = False
         successJpylyzerCheck = False
+        validationOutcome = "Fail"
         schTestsFailedStr = ""
         self.rowBm = []
         self.checksum = ""
@@ -245,6 +246,10 @@ class TiffToJP2:
             # Calculate checksum (SHA-512)
             self.checksum = shared.generate_file_sha512(fileOut)
 
+            # Set validation outcome to "Pass" if all checks passed
+            if successGrok and successExifTool and successPixelCheck and successJpylyzerCheck:
+                validationOutcome = "Pass"
+
             # Batch manifest row
             self.rowBm = [fileOutRel,
                           successGrok,
@@ -252,4 +257,5 @@ class TiffToJP2:
                           pCheck.pallettedFlag,
                           successPixelCheck,
                           successJpylyzerCheck,
-                          schTestsFailedStr]
+                          schTestsFailedStr,
+                          validationOutcome]

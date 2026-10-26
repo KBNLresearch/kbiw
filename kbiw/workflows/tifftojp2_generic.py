@@ -107,7 +107,8 @@ class Workflow:
                             "palettedImage",
                             "successPixelCheck",
                             "successJpylyzerCheck",
-                            "failedJpylyzerChecks"]
+                            "failedJpylyzerChecks",
+                            "validationOutcome"]
 
         with open(self.batchManifest, 'w', newline='', encoding='utf-8') as fManifest:
             writer = csv.writer(fManifest, delimiter=self.delimiterOut)

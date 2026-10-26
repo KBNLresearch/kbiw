@@ -127,7 +127,8 @@ class Workflow:
                             "successJpylyzerCheck",
                             "failedJpylyzerChecks",
                             "successFileMatch",
-                            "successChecksumCheck"]
+                            "successChecksumCheck",
+                            "validationOutcome"]
 
         with open(self.batchManifest, 'w', newline='', encoding='utf-8') as fManifest:
             writer = csv.writer(fManifest, delimiter=self.delimiterOut)
@@ -268,9 +269,12 @@ class Workflow:
                 # Write row to batch manifest
                 with open(self.batchManifest, 'a', newline='', encoding='utf-8') as fManifest:
                     writer = csv.writer(fManifest, delimiter=self.delimiterOut)
-                    # add two empty columns to fit access fields
-                    rowBm = self.tifftoJP2Instance.rowBm
+                    # Start with first 7 elements
+                    rowBm = self.tifftoJP2Instance.rowBm[0:7]
+                    # Add two empty columns to fit access fields
                     rowBm.extend(["na", "na"])
+                    # Add validationOutcome
+                    rowBm.extend(self.tifftoJP2Instance.rowBm[7:8])
                     writer.writerow(rowBm)
 
                 # Write row to checksum file
@@ -324,6 +328,7 @@ class Workflow:
         # Iterate over files
         for dirname, dirnames, filenames in os.walk(dirPathOut):
             for filename in filenames:
+                validationOutcome = "Fail"
                 if filename.startswith("._"):
                     # Ignore AppleDouble resource fork files (identified here by name)
                     pass
@@ -361,8 +366,11 @@ class Workflow:
                         self.noErrors += 1
                         self.errors.append(msg)
 
+                    if fileMatch and checksumMatch:
+                        validationOutcome = "Pass"
+
                     # Write row to batch manifest
                     with open(self.batchManifest, 'a', newline='', encoding='utf-8') as fManifest:
                         writer = csv.writer(fManifest, delimiter=self.delimiterOut)
-                        rowBm = [thisFileRel, "na", "na", "na", "na", "na", "na", fileMatch, checksumMatch]
+                        rowBm = [thisFileRel, "na", "na", "na", "na", "na", "na", fileMatch, checksumMatch, validationOutcome]
                         writer.writerow(rowBm)
