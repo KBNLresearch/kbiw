@@ -32,7 +32,7 @@ class PropertiesCheck:
         # List with failed Jpylyzer tests
         self.jpylyzerTestsFailed = []
         # Flag that indicates a paletted image
-        self.pallettedFlag = False
+        self.palettedFlag = False
 
     def extractSchematron(self, report):
         """Parse output of Schematron validation and extract failed tests"""
@@ -81,7 +81,7 @@ class PropertiesCheck:
             resultJpylyzer = jpylyzer.checkOneFile(JP2)
             resultAsXML = ET.tostring(resultJpylyzer, 'UTF-8', 'xml')
             if resultJpylyzer.find('properties/jp2HeaderBox/paletteBox'):
-                self.pallettedFlag = True
+                self.palettedFlag = True
 
         except Exception:
             msg = "error while running jpylyzer"
