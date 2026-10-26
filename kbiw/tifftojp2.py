@@ -256,10 +256,10 @@ class TiffToJP2:
 
         # Batch manifest row
         self.rowBm = [fileOutRel,
-                        successGrok,
-                        successExifTool,
-                        palettedFlag,
-                        successPixelCheck,
-                        successJpylyzerCheck,
-                        schTestsFailedStr,
-                        validationOutcome]
+                      successGrok,
+                      successExifTool,
+                      palettedFlag,
+                      successPixelCheck,
+                      successJpylyzerCheck,
+                      schTestsFailedStr,
+                      validationOutcome]
