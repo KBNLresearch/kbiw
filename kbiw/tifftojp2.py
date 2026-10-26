@@ -77,6 +77,7 @@ class TiffToJP2:
     def convertImage(self, fileIn):
         """Process one image"""
         convertFromUnpaletted = False
+        palettedFlag = False
         successGrok = False
         successExifTool = False
         successPixelCheck = False
@@ -99,6 +100,8 @@ class TiffToJP2:
         fileNameOut = "{}.{}".format(pre, "jp2")
 
         fileOut = os.path.abspath(os.path.join(filePathOut, fileNameOut))
+        # File reference, relative to output directory (needed for batch manifest)
+        fileOutRel = os.path.relpath(fileOut, start=self.dirOut)
 
         logging.info("#############################")
         logging.info("Input image: {}".format(fileIn))
@@ -127,7 +130,7 @@ class TiffToJP2:
 
         # Pass I/O to Grok instance and run the conversion
         if convertFromUnpaletted and pcSuccess:
-            # Use unpalletted image as input
+            # Use unpaletted image as input
             self.grokInstance.imageIn = fTmp
         else:
             self.grokInstance.imageIn = fileIn
@@ -187,6 +190,9 @@ class TiffToJP2:
             pCheck = propertiescheck.PropertiesCheck(self.schema)
             pCheck.checkProperties(fileOut)
 
+            # Set palettedFlag
+            palettedFlag = pCheck.palettedFlag
+
             # Add any errors and warnings from properties checking to general error, warning count
             self.noErrors += pCheck.noErrors
             self.noWarnings += pCheck.noWarnings
@@ -210,7 +216,7 @@ class TiffToJP2:
 
             try:
                 # Check on pixel values (skip for paletted images, because LibVips can't handle paletted JP2s)
-                if not pCheck.pallettedFlag:
+                if not palettedFlag:
                     ssDiff = self.vipsInstance.sumSqDiff(fileIn, fileOut)
                     if ssDiff is None:
                         msg = "pixel check failed with exception"
@@ -241,8 +247,6 @@ class TiffToJP2:
                 self.noErrors += 1
                 self.errors.append(msg)
 
-            # File reference, relative to output directory
-            fileOutRel = os.path.relpath(fileOut, start=self.dirOut)
             # Calculate checksum (SHA-512)
             self.checksum = shared.generate_file_sha512(fileOut)
 
@@ -250,12 +254,12 @@ class TiffToJP2:
             if successGrok and successExifTool and successPixelCheck and successJpylyzerCheck:
                 validationOutcome = "Pass"
 
-            # Batch manifest row
-            self.rowBm = [fileOutRel,
-                          successGrok,
-                          successExifTool,
-                          pCheck.pallettedFlag,
-                          successPixelCheck,
-                          successJpylyzerCheck,
-                          schTestsFailedStr,
-                          validationOutcome]
+        # Batch manifest row
+        self.rowBm = [fileOutRel,
+                        successGrok,
+                        successExifTool,
+                        palettedFlag,
+                        successPixelCheck,
+                        successJpylyzerCheck,
+                        schTestsFailedStr,
+                        validationOutcome]

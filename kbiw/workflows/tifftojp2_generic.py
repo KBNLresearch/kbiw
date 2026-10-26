@@ -180,6 +180,7 @@ class Workflow:
                 self.noWarnings += self.tifftoJP2Instance.noWarnings
                 self.errors.extend(self.tifftoJP2Instance.errors)
                 self.warnings.extend(self.tifftoJP2Instance.warnings)
+
                 if self.tifftoJP2Instance.rowBm[7] == "Fail":
                     self.noFails += 1
 
