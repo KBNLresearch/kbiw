@@ -40,6 +40,8 @@ class Workflow:
         self.noErrors = 0
         # Number of warnings encountered during workflow
         self.noWarnings = 0
+        # Number of files that failed validation checks
+        self.noFails = 0
         # List with errors
         self.errors = []
         # List with warnings
@@ -232,7 +234,7 @@ class Workflow:
                        "grokVersion": self.tifftoJP2Instance.grokInstance.version,
                        "noErrors": str(self.noErrors),
                        "noWarnings": str(self.noWarnings),
-                       "comment": "See batch manifest and log file for details on errors and warnings"}
+                       "noFails": str(self.noFails)}
 
         # Write summary file
         SummaryFileInstance = summaryfile.SummaryFile(self.summaryFile, summaryDict, self.errors, self.warnings)
@@ -265,6 +267,8 @@ class Workflow:
                 self.noWarnings += self.tifftoJP2Instance.noWarnings
                 self.errors.extend(self.tifftoJP2Instance.errors)
                 self.warnings.extend(self.tifftoJP2Instance.warnings)
+                if self.tifftoJP2Instance.rowBm[7] == "Fail":
+                    self.noFails += 1
 
                 # Write row to batch manifest
                 with open(self.batchManifest, 'a', newline='', encoding='utf-8') as fManifest:

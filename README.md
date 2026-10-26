@@ -219,11 +219,17 @@ This is an XML file with a brief summary of the results of the workflow. Here's 
 ``` xml
 <?xml version="1.0" ?>
 <kbiw xmlns="http://kb.nl/ns/kbiw/v1/" xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance">
-    <kbiwVersion>0.1.2</kbiwVersion>
-    <grokVersion>20.3.5</grokVersion>
+    <kbiwVersion>0.4.0</kbiwVersion>
+    <grokVersion>20.4.5</grokVersion>
     <noErrors>1</noErrors>
-    <noWarnings>0</noWarnings>
-    <comment>See batch manifest and log file for details on errors and warnings</comment>
+    <noWarnings>26</noWarnings>
+    <noFails>26</noFails>
+    <errors>
+        <error count="1">checksum check unsuccessful for Signaturen/KW71G57/Access_Renamed/KW71G57_0001b_Front_Cover_Ruler.jpg</error>
+    </errors>
+    <warnings>
+        <warning count="26">image does not conform to Schematron rules</warning>
+    </warnings>
 </kbiw>
 ```
 
@@ -240,6 +246,7 @@ This is a semicolon-delimited file with information about each converted image. 
 |successPixelCheck|True/False flag that indicates if the check on the pixel values was successful|
 |successJpylyzerCheck|True/False flag that indicates if the check on the image properties (Jpylyzer + Schematron) was successful|
 |failedJpylyzerChecks|List of failed Jpylyzer + Schematron checks (separated by "\|" characters)|
+|validationOutcome|Flag with value "Pass" if file passed all previous checks, and "Fail" otherwise|
 
 For the MH (Middeleeuwse Handschriften) workflow, two additional columns are reported:
 
@@ -249,7 +256,6 @@ For the MH (Middeleeuwse Handschriften) workflow, two additional columns are rep
 |successChecksumCheck|True/False flag that indicates if the checksum for a file that was copied from the source batch was successful|
 
 These are *only* reported for (access) files that were copied from the source batch. For these files, all other fields have the value "na". Conversely, for converted images these fields always have the value "na".
-
 
 #### kbiw.log
 
